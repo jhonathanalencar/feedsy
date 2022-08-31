@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
 import { Outlet } from 'react-router-dom';
-import { Bell, CaretDown, Plus } from "phosphor-react";
+import { Bell, CaretDown, Plus, Users } from "phosphor-react";
+
 import { Navbar } from "../../components/Navbar";
 import { DropdownMenu } from "../../components/Navbar/components/DropdownMenu";
 import { NavItem } from "../../components/Navbar/components/NavItem";
@@ -23,6 +23,7 @@ export function DefaultLayout(){
           </Logo>
           <Navbar>
             <NavItem icon={<Plus />} />
+            <NavItem icon={<Users />} link="/signin" />
             <NavItem icon={<Bell />} />
             <NavItem icon={<CaretDown />}>
               <DropdownMenu />

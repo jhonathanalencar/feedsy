@@ -1,11 +1,13 @@
-import { ReactNode, useEffect, useState } from "react"
+import { ReactNode, useEffect, useState } from "react";
+import { Link } from 'react-router-dom';
 
 interface NavItemProps{
   icon: ReactNode;
   children?: ReactNode;
+  link?: string;
 }
 
-export function NavItem({ icon, children }: NavItemProps){
+export function NavItem({ icon, children, link }: NavItemProps){
   const [isOpen, setIsOpen] = useState(false);
   
   function handleCloseDropdownMenu(e: KeyboardEvent){
@@ -22,9 +24,9 @@ export function NavItem({ icon, children }: NavItemProps){
 
   return(
     <li>
-      <a href="#" onClick={() => setIsOpen((prevState) => !prevState)}>
+      <Link to={link ?? '#'} onClick={() => setIsOpen((prevState) => !prevState)}>
         {icon}
-      </a>
+      </Link>
       {isOpen && children}
     </li>
   )
