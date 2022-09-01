@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Bell, CaretDown, Plus, Users } from "phosphor-react";
 
@@ -24,7 +25,6 @@ export function DefaultLayout(){
           <Navbar>
             <NavItem icon={<Plus />} />
             <NavItem icon={<Users />} link="/signin" />
-            <NavItem icon={<Bell />} />
             <NavItem icon={<CaretDown />}>
               <DropdownMenu />
             </NavItem>

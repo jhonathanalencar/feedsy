@@ -17,6 +17,10 @@ export const HeaderContainer = styled.header`
   align-items: center;
   justify-content: center;
   padding: 2rem 0;
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 99;
 `;
 
 export const HeaderWrapper = styled.div`

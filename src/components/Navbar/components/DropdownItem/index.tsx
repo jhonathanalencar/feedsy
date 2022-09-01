@@ -1,4 +1,6 @@
+import { Link } from "phosphor-react";
 import { ReactNode } from "react";
+import { useGlobalContext } from "../../../../hooks/useGlobalContext";
 
 import { Item } from './styles';
 
@@ -12,20 +14,41 @@ interface DropdownItemProps{
 }
 
 export function DropdownItem({ leftIcon, rightIcon, children, goToMenu, setActiveMenu, href}: DropdownItemProps){
+  const { closeDropdownMenu } = useGlobalContext();
+
   return(
-    <Item 
-      to={href ?? '#'} 
-      onClick={() => goToMenu && setActiveMenu && setActiveMenu(goToMenu)}
-    >
-      <span>
-        {leftIcon && leftIcon}
-      </span>
+    <>
+      {goToMenu ? (
+        <Item 
+          to={href ?? '#'} 
+          onClick={() => setActiveMenu && setActiveMenu(goToMenu)}
+        >
+          <span>
+            {leftIcon && leftIcon}
+          </span>
 
-      {children}
+          {children}
 
-      <span>
-        {rightIcon && rightIcon}
-      </span>
-    </Item>
+          <span>
+            {rightIcon && rightIcon}
+          </span>
+        </Item>
+      ) : (
+        <Item 
+          to={href ?? '#'} 
+          onClick={closeDropdownMenu}
+        >
+          <span>
+            {leftIcon && leftIcon}
+          </span>
+
+          {children}
+
+          <span>
+            <Link />
+          </span>
+        </Item>
+      )}
+    </>
   )
 }

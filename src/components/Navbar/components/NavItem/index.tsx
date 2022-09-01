@@ -1,5 +1,8 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect } from "react";
 import { Link } from 'react-router-dom';
+import { useGlobalContext } from "../../../../hooks/useGlobalContext";
+
+import { DropdownButton, DropdownLi } from './styles';
 
 interface NavItemProps{
   icon: ReactNode;
@@ -8,11 +11,11 @@ interface NavItemProps{
 }
 
 export function NavItem({ icon, children, link }: NavItemProps){
-  const [isOpen, setIsOpen] = useState(false);
+  const { isDropdownMenuOpen, toggleDropdownMenu, closeDropdownMenu } = useGlobalContext();
   
   function handleCloseDropdownMenu(e: KeyboardEvent){
     if(e.key === 'Escape'){
-      setIsOpen(false);
+      closeDropdownMenu();
     }
   }
 
@@ -23,11 +26,26 @@ export function NavItem({ icon, children, link }: NavItemProps){
   }, [])
 
   return(
-    <li>
-      <Link to={link ?? '#'} onClick={() => setIsOpen((prevState) => !prevState)}>
-        {icon}
-      </Link>
-      {isOpen && children}
-    </li>
+    <>
+      {children ? (
+        <DropdownLi>
+          <DropdownButton 
+            type="button" 
+            onClick={toggleDropdownMenu}
+            aria-expanded={isDropdownMenuOpen}
+            aria-controls="menu-dropdown"
+          >
+            {icon}
+          </DropdownButton>
+          {isDropdownMenuOpen && children}
+        </DropdownLi>
+      ) : (
+        <DropdownLi>
+          <Link to={link ?? '#'}>
+            {icon}
+          </Link>
+        </DropdownLi>
+      )}
+    </>
   )
 }

@@ -12,7 +12,7 @@ interface NavbarProps{
 export function Navbar({ children }: NavbarProps){
   return(
     <Nav>
-      <NavbarItems>
+      <NavbarItems id="menu-dropdown">
         {children}
       </NavbarItems>
     </Nav>

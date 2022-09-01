@@ -17,11 +17,14 @@ import {
   DropdownMenuContainer,
   Dropdown,
 } from './styles';
+import { useGlobalContext } from '../../../../hooks/useGlobalContext';
 
 export function DropdownMenu(){
   const [activeMenu, setActiveMenu] = useState('main');
   const [menuHeight, setMenuHeight] = useState<number | null>(null);
   const dropdownMenuRef = useRef<HTMLDivElement>(null);
+
+  const { closeDropdownMenu } = useGlobalContext();
 
   function calculateHeight(element: HTMLElement){
     const height = element.offsetHeight;
@@ -34,6 +37,25 @@ export function DropdownMenu(){
       setMenuHeight(div.offsetHeight);
     }
   }, []);
+
+   function closeDropdownOnClickOutside(e: MouseEvent){
+    if(!dropdownMenuRef.current){ return; }
+    const element = e.target as HTMLElement
+    if(element.parentElement?.className === 'sc-jSMfEi hFjvjs' || element.className === 'sc-jSMfEi hFjvjs'){
+      return;
+    }
+    if(!dropdownMenuRef.current.contains(element)){
+      closeDropdownMenu();
+    }
+  }
+
+  useEffect(() =>{
+    window.addEventListener('click', closeDropdownOnClickOutside);
+
+    return () => {
+      window.removeEventListener('click', closeDropdownOnClickOutside);
+    }
+  }, [])
 
   return(
     <DropdownMenuContainer style={{ height: menuHeight ?? '' }} ref={dropdownMenuRef}>

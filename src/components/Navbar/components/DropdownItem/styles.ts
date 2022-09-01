@@ -12,7 +12,8 @@ export const Item = styled(Link)`
   text-align: start;
   color: ${(props) => props.theme['gray-100']};
   margin-bottom: 0.2rem;
-
+  margin-right: auto;
+  
   span{
     display: flex;
     align-items: center; 

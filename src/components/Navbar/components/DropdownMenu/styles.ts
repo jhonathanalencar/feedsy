@@ -13,10 +13,9 @@ export const DropdownMenuContainer = styled.div`
   @media (max-width: 600px){
     right: 0;
     transform: translateX(0);
-
   }
 
-  @media (max-width: 360px){
+  @media (max-width: 450px){
     width: 100%;
   }
 
