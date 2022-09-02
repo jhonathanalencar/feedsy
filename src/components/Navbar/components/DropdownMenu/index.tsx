@@ -20,6 +20,8 @@ import {
   Dropdown,
 } from './styles';
 import { useGlobalContext } from '../../../../hooks/useGlobalContext';
+import { useCloseOnClickOutside } from '../../../../hooks/useCloseOnClickOutside';
+import { useEventListener } from '../../../../hooks/useEventListener';
 
 export function DropdownMenu(){
   const [activeMenu, setActiveMenu] = useState('main');
@@ -28,7 +30,7 @@ export function DropdownMenu(){
   const transitionOneRef = useRef<any>(null);
   const transitionTwoRef = useRef<any>(null);
 
-  const { closeDropdownMenu } = useGlobalContext();
+  const { closeDropdownMenu, dropdownButtonRef } = useGlobalContext();
 
   function calculateHeight(element: HTMLElement){
     const height = element.offsetHeight;
@@ -42,24 +44,11 @@ export function DropdownMenu(){
     }
   }, []);
 
-   function closeDropdownOnClickOutside(e: MouseEvent){
-    if(!dropdownMenuRef.current){ return; }
-    const element = e.target as HTMLElement
-    if(element.parentElement?.className === 'sc-jSMfEi hFjvjs' || element.className === 'sc-jSMfEi hFjvjs'){
-      return;
-    }
-    if(!dropdownMenuRef.current.contains(element)){
-      closeDropdownMenu();
-    }
+  function closeDropdownOnClickOutside(e: MouseEvent){
+    useCloseOnClickOutside<HTMLDivElement>(e, dropdownMenuRef, dropdownButtonRef, closeDropdownMenu);
   }
 
-  useEffect(() =>{
-    window.addEventListener('click', closeDropdownOnClickOutside);
-
-    return () => {
-      window.removeEventListener('click', closeDropdownOnClickOutside);
-    }
-  }, [])
+  useEventListener('mousedown', closeDropdownOnClickOutside);
 
   return(
     <DropdownMenuContainer style={{ height: menuHeight ?? '' }} ref={dropdownMenuRef}>

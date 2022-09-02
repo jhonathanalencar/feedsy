@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 import { Link } from 'react-router-dom';
 import { useGlobalContext } from "../../../../hooks/useGlobalContext";
 
@@ -11,7 +11,8 @@ interface NavItemProps{
 }
 
 export function NavItem({ icon, children, link }: NavItemProps){
-  const { isDropdownMenuOpen, toggleDropdownMenu, closeDropdownMenu } = useGlobalContext();
+
+  const { isDropdownMenuOpen, toggleDropdownMenu, closeDropdownMenu, dropdownButtonRef } = useGlobalContext();
   
   function handleCloseDropdownMenu(e: KeyboardEvent){
     if(e.key === 'Escape'){
@@ -20,15 +21,19 @@ export function NavItem({ icon, children, link }: NavItemProps){
   }
 
   useEffect(() =>{
+    if(!children){ return;}
+
     document.addEventListener('keydown', handleCloseDropdownMenu);
 
-    return () => document.removeEventListener('keydown', handleCloseDropdownMenu);
+    return () => {
+      document.removeEventListener('keydown', handleCloseDropdownMenu);
+    }
   }, [])
 
   return(
     <>
       {children ? (
-        <DropdownLi>
+        <DropdownLi ref={dropdownButtonRef}>
           <DropdownButton 
             type="button" 
             onClick={toggleDropdownMenu}

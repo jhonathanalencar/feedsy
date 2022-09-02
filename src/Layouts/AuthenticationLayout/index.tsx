@@ -9,9 +9,7 @@ export function AuthenticationLayout(){
   const location = useLocation();
 
   const { pathname } = location;
-
   const path = pathname.substring(pathname.indexOf('/'), pathname.length);
-  console.log(path);
 
   return(
     <LayoutContainer>

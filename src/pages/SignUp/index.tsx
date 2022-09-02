@@ -82,6 +82,7 @@ export function SignUp(){
           type="password" 
           id="password"
           placeholder="Enter password"
+          autoComplete="off"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -99,6 +100,7 @@ export function SignUp(){
           type="password" 
           id="confirmPassword"
           placeholder="Enter password"
+          autoComplete="off"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
@@ -110,7 +112,7 @@ export function SignUp(){
           <span>Password must be equals</span>
         </ErrorDescription>
         <SignupButton disabled={isEmptyFields}>
-          Sign in
+          Sign up
         </SignupButton>
         <Text>Already have an account? <Link to="/signin">Sign in</Link></Text>
       </Form>
