@@ -26,7 +26,7 @@ export const DropdownMenuContainer = styled.div`
   }
   .menu-primary-enter-active {
     transform: translateX(0%);
-    transition: all .3s ease;
+    transition: all .5s ease;
   }
   .menu-primary-exit {
     position: absolute;
@@ -37,18 +37,22 @@ export const DropdownMenuContainer = styled.div`
   }
 
   .menu-secondary-enter {
+    /* opacity: 0; */
     transform: translateX(110%);
   }
   .menu-secondary-enter-active {
+    /* opacity: 1; */
     transform: translateX(0%);
     transition: all .3s ease;
   }
   .menu-secondary-exit {
+    opacity: 1;
   }
   .menu-secondary-exit-active {
     transform: translateX(110%);
+    opacity: 0;
     transition: all .3s ease;
-  }
+  }      
 `;
 
 export const Dropdown = styled.div`

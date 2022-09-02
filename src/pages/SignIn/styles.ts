@@ -6,11 +6,6 @@ export const SigninContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4rem 0;
-
-  @media (max-width: 1000px){
-    padding: 4rem 1rem;
-  }
 `;
 
 export const Form = styled.form`
@@ -124,6 +119,7 @@ export const CheckboxContainer = styled.div`
     width: 0.75rem;
     height: 0.75rem;
     left: 0;
+    cursor: pointer;
   }
 
   input[type=checkbox]:checked + label::after{
@@ -141,15 +137,20 @@ export const SigninButton = styled.button`
   text-transform: uppercase;
   font-weight: bold;
   letter-spacing: 0.1rem;
-  background-color: ${({theme}) => theme['blue-500']};
+  background-color: ${({theme}) => theme['purple-500']};
   color: ${({theme}) => theme['gray-100']};
   border: 0.2rem solid transparent;
   border-radius: 0.25rem;
   cursor: pointer;
   transition: all .3s ease;
 
-  &:hover{
-    background-color: ${({theme}) => lighten(0.1, theme['blue-500'])};
+  &:not(:disabled):hover{
+    background-color: ${({theme}) => lighten(0.1, theme['purple-400'])};
+  }
+
+  &:disabled{
+    opacity: 0.8;
+    cursor: not-allowed;
   }
 
   @media (max-width: 550px){

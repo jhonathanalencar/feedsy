@@ -45,7 +45,7 @@ export function DropdownItem({ leftIcon, rightIcon, children, goToMenu, setActiv
           {children}
 
           <span>
-            <Link />
+            {rightIcon ? rightIcon : <Link />}
           </span>
         </Item>
       )}

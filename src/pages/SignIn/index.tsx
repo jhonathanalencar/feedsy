@@ -75,6 +75,7 @@ export function SignIn(){
           <Label htmlFor="remember">Remember password</Label>
         </CheckboxContainer>
         <SigninButton
+          aria-disabled={isEmptyFields}
           disabled={isEmptyFields}
         >
           Sign in

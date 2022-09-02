@@ -10,7 +10,9 @@ import {
   User, 
   SignOut,
   Trash, 
-  House
+  House,
+  CircleWavyWarning,
+  LightningSlash,
 } from 'phosphor-react';
 
 import { 
@@ -23,6 +25,8 @@ export function DropdownMenu(){
   const [activeMenu, setActiveMenu] = useState('main');
   const [menuHeight, setMenuHeight] = useState<number | null>(null);
   const dropdownMenuRef = useRef<HTMLDivElement>(null);
+  const transitionOneRef = useRef<any>(null);
+  const transitionTwoRef = useRef<any>(null);
 
   const { closeDropdownMenu } = useGlobalContext();
 
@@ -61,12 +65,13 @@ export function DropdownMenu(){
     <DropdownMenuContainer style={{ height: menuHeight ?? '' }} ref={dropdownMenuRef}>
       <CSSTransition
         in={activeMenu === 'main'}
+        nodeRef={transitionOneRef}
         unmountOnExit
         timeout={500}
         classNames="menu-primary"
         onEnter={calculateHeight}
       >
-        <Dropdown>
+        <Dropdown className='menu' ref={transitionOneRef}>
           <DropdownItem 
             leftIcon={<House />}
             href="/"
@@ -92,12 +97,13 @@ export function DropdownMenu(){
 
       <CSSTransition
         in={activeMenu === 'settings'}
+        nodeRef={transitionTwoRef}
         unmountOnExit
         timeout={500}
         classNames="menu-secondary"
         onEnter={calculateHeight}
       >
-        <Dropdown className="menu">
+        <Dropdown className="menu" ref={transitionTwoRef}>
           <DropdownItem 
             leftIcon={<ArrowLeft />} 
             goToMenu="main"
@@ -107,11 +113,13 @@ export function DropdownMenu(){
           </DropdownItem>
           <DropdownItem 
             leftIcon={<SignOut />}
+            rightIcon={<LightningSlash />}
           >
             <span>Sign Out</span>
           </DropdownItem>
           <DropdownItem 
             leftIcon={<Trash />}
+            rightIcon={<CircleWavyWarning />}
           >
             <span>Delete Account</span>
           </DropdownItem>
