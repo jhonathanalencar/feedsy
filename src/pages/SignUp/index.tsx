@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as zod from 'zod';
+
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 
 import { 
   SignupContainer,
@@ -13,108 +18,173 @@ import {
   Text,
 } from './styles';
 
-export function SignUp(){
-  const usernameRef = useRef<HTMLInputElement>(null);
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
 
-  const isEmptyFields = !username || !email || !confirmPassword || !password;
+const signupFormValidationSchema = zod.object({
+  username: zod
+    .string().trim()
+    .min(3, 'Username must be at least 3 characters.')
+    .max(23, 'Username must be at most 23 characters.')
+    .regex(/^[A-z]/, 'Username must begin with a letter'),
+  email: zod
+    .string().trim()
+    .email('Must be a valid email'),
+  password: zod
+    .string().trim()
+    .min(8, 'Password must be at least 8 characters.')
+    .max(24, 'Password must be at most 24 characters.')
+    .regex(passwordRegex, 'Must include uppercase and lowercase letters, a number and a special character.'),
+  confirmPassword: 
+    zod.string().trim()
+}).refine((data) => data.password === data.confirmPassword, { message: "Passwords don't match", path: ['confirmPassword'] });
+
+type SignupFormData = zod.infer<typeof signupFormValidationSchema>
+
+export function SignUp(){
+  const errorRef = useRef<HTMLSpanElement>(null);
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const signupForm = useForm<SignupFormData>({
+    resolver: zodResolver(signupFormValidationSchema),
+    defaultValues: {
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+    mode: 'all'
+  });
+
+  const { 
+    handleSubmit, 
+    watch, 
+    reset, 
+    register, formState: { errors, isSubmitting }, 
+    setFocus,
+  } = signupForm;
+
+  function onSubmit(data: SignupFormData){
+    console.log(data)
+
+    reset();
+  }
+
+  const isEmptyFields = !watch().username || !watch().email || !watch().password || !watch().confirmPassword;
+
+  function handleValidation(){
+    if(errors.username){
+      setFocus('username', { shouldSelect: true });
+    }else if(errors.email){
+      setFocus('email', { shouldSelect: true });
+    }else if(errors.password){
+      setFocus('password', { shouldSelect: true })
+    }else if(errors.confirmPassword){
+      setFocus('confirmPassword', { shouldSelect: true });
+    }
+  }
 
   useEffect(() =>{
-    if(!usernameRef.current){ return; }
-
-    usernameRef.current.focus();
-  }, [])
+    setFocus('username');
+  }, []);
 
   return(
     <SignupContainer>
-      <Form>
-        <HeadingContainer>
-          <span>Register</span>
-          <strong>Sign up for Feedsy</strong>
-        </HeadingContainer>
-        <Error>
-          error
-        </Error>
-        <Label htmlFor="username">
-          Username:
-        </Label>
-        <Input 
-          type="text" 
-          id="username"
-          ref={usernameRef}  
-          placeholder="Enter username"
-          autoComplete="off"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-          aria-invalid={true}
-          aria-describedby="usernamenote"
-          aria-live="assertive"
-        />
-        <ErrorDescription id="usernmenote">
-          <span>Username must has 3 characters</span>
-        </ErrorDescription>
-        <Label htmlFor="email">
-          Email:
-        </Label>
-        <Input 
-          type="email" 
-          id="email"
-          placeholder="Enter email"
-          autoComplete="off"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          aria-invalid={true}
-          aria-describedby="emailnote"
-          aria-live="assertive"
-        />
-        <ErrorDescription>
-          <span>Email must be valid</span>
-        </ErrorDescription>
-        <Label htmlFor="password">
-          Password:
-        </Label>
-        <Input 
-          type="password" 
-          id="password"
-          placeholder="Enter password"
-          autoComplete="off"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          aria-invalid={true}
-          aria-describedby="passwordnote"
-          aria-live="assertive"
-        />
-        <ErrorDescription id="passwordnote">
-          <span>Password must have 8 characteres</span>
-        </ErrorDescription>
-        <Label htmlFor="confirmPassword">
-          Confirm Passoword:
-        </Label>
-        <Input 
-          type="password" 
-          id="confirmPassword"
-          placeholder="Enter password"
-          autoComplete="off"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-          aria-invalid={true}
-          aria-describedby="confirmnote"
-          aria-live="assertive"
-        />
-        <ErrorDescription id="confirmnote">
-          <span>Password must be equals</span>
-        </ErrorDescription>
-        <SignupButton disabled={isEmptyFields}>
-          Sign up
-        </SignupButton>
-        <Text>Already have an account? <Link to="/signin">Sign in</Link></Text>
+      <Form onSubmit={handleSubmit(onSubmit)}>
+        <FormProvider {...signupForm}>
+          <HeadingContainer>
+            <span>Register</span>
+            <strong>Sign up for Feedsy</strong>
+          </HeadingContainer>
+          {errorMessage && (
+            <Error ref={errorRef} aria-live="assertive">
+              {errorMessage}
+            </Error>
+          )}
+          <Label htmlFor="username">
+            Username:
+          </Label>
+          <Input 
+            type="text" 
+            id="username"
+            placeholder="Enter username"
+            autoComplete="off"
+            required
+            disabled={isSubmitting}
+            aria-invalid={errors.username ? true : false}
+            aria-describedby="usernamenote"
+            {...register('username')}
+          />
+          {errors.username && (
+            <ErrorDescription id="usernamenote" aria-live="assertive">
+              <span role="alert">{errors.username.message}</span>
+            </ErrorDescription>
+          )}
+
+          <Label htmlFor="email">
+            Email:
+          </Label>
+          <Input 
+            type="email" 
+            id="email"
+            placeholder="Enter email"
+            autoComplete="off"
+            required
+            disabled={isSubmitting}
+            aria-invalid={errors.email ? true : false}
+            aria-describedby="emailnote"
+            {...register('email')}
+          />
+          {errors.email && (
+            <ErrorDescription id="emailnote" aria-live="assertive">
+              <span role="alert">{errors.email.message}</span>
+            </ErrorDescription>
+          )}
+
+          <Label htmlFor="password">
+            Password:
+          </Label>
+          <Input 
+            type="password" 
+            id="password"
+            placeholder="Enter password"
+            autoComplete="off"
+            required
+            disabled={isSubmitting}
+            aria-invalid={errors.password ? true : false}
+            aria-describedby="passwordnote"
+            {...register('password')}
+          />
+
+          {errors.password && (
+            <ErrorDescription id="passwordnote" aria-live="assertive">
+              <span role="alert">{errors.password.message}</span>
+            </ErrorDescription>
+          )}
+
+          <Label htmlFor="confirmPassword">
+            Confirm Passoword:
+          </Label>
+          <Input 
+            type="password" 
+            id="confirmPassword"
+            placeholder="Enter password"
+            autoComplete="off"
+            required
+            disabled={isSubmitting}
+            aria-invalid={errors.confirmPassword ? true : false}
+            aria-describedby="confirmnote"
+            {...register('confirmPassword')}
+          />
+          {errors.confirmPassword && (
+            <ErrorDescription id="confirmnote" aria-live="assertive">
+              <span>{errors.confirmPassword.message}</span>
+            </ErrorDescription>
+          )}
+          
+          <SignupButton disabled={isEmptyFields} onClick={handleValidation}>
+            Sign up
+          </SignupButton>
+          <Text>Already have an account? <Link to="/signin">Sign in</Link></Text>
+        </FormProvider>
       </Form>
     </SignupContainer>
   )
