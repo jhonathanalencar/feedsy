@@ -1,6 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { Outlet } from 'react-router-dom';
-import { Bell, CaretDown, Plus, Users } from "phosphor-react";
+import { Link, Outlet } from 'react-router-dom';
+import { CaretDown, Plus, Users } from "phosphor-react";
 
 import { Navbar } from "../../components/Navbar";
 import { DropdownMenu } from "../../components/Navbar/components/DropdownMenu";
@@ -20,7 +19,9 @@ export function DefaultLayout(){
       <HeaderContainer>
         <HeaderWrapper>
           <Logo>
-            <strong>Feed<span>sy</span></strong>
+            <Link to="/">
+              <strong>Feed<span>sy</span></strong>
+            </Link>
           </Logo>
           <Navbar>
             <NavItem icon={<Plus />} />

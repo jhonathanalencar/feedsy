@@ -33,6 +33,10 @@ export const HeaderWrapper = styled.div`
 `;
 
 export const Logo = styled.div`
+  a{
+    text-decoration: none;
+  }
+
   strong{
     font-size: 2rem;
     color: ${(props) => props.theme['blue-100']};
