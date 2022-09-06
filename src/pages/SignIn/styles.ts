@@ -31,7 +31,7 @@ export const HeadingContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 
   span{
     font-size: 1rem;
@@ -40,7 +40,7 @@ export const HeadingContainer = styled.div`
 
   strong{
     font-size: 1.5rem;
-    color: ${({theme}) => theme['gray-600']};
+    color: ${({theme}) => theme['gray-500']};
   }
 
   @media (max-width: 550px){

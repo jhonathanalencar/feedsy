@@ -25,11 +25,16 @@ export const FormContainer = styled.div`
 
 export const LayoutHeader = styled.div`
   width: 100%;
+  width: 50%;
   display: flex;
   align-items: center;
   justify-content: left;
   max-width: 600px;
   margin: 0 auto;
+
+  @media (max-width: 1000px){
+    width: 100%;
+  }
 
   a{
     color: ${({theme}) => theme['gray-200']};
@@ -41,6 +46,10 @@ export const LayoutHeader = styled.div`
 
     &:hover{
       background-color: ${({theme}) => lighten(0.05, theme['gray-600'])};
+    }
+
+    @media (max-width: 550px){
+      padding: 1rem;
     }
   }
 

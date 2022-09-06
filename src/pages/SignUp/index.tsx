@@ -100,7 +100,7 @@ export function SignUp(){
             </Error>
           )}
           <Label htmlFor="username">
-            Username:
+            Username
           </Label>
           <Input 
             type="text" 
@@ -120,7 +120,7 @@ export function SignUp(){
           )}
 
           <Label htmlFor="email">
-            Email:
+            Email
           </Label>
           <Input 
             type="email" 
@@ -140,7 +140,7 @@ export function SignUp(){
           )}
 
           <Label htmlFor="password">
-            Password:
+            Password
           </Label>
           <Input 
             type="password" 
@@ -161,7 +161,7 @@ export function SignUp(){
           )}
 
           <Label htmlFor="confirmPassword">
-            Confirm Passoword:
+            Confirm Passoword
           </Label>
           <Input 
             type="password" 
@@ -180,7 +180,7 @@ export function SignUp(){
             </ErrorDescription>
           )}
           
-          <SignupButton disabled={isEmptyFields} onClick={handleValidation}>
+          <SignupButton disabled={isEmptyFields || isSubmitting} onClick={handleValidation}>
             Sign up
           </SignupButton>
           <Text>Already have an account? <Link to="/signin">Sign in</Link></Text>
