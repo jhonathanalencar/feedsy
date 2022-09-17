@@ -50,21 +50,6 @@ export const HeadingContainer = styled.div`
   }
 `;
 
-export const Error = styled.span`
-  width: 100%;
-  background-color: ${(props) => props.theme['red-500']};
-  color: ${(props) => props.theme['gray-100']};
-  font-size: 1.1rem;
-  font-weight: 600;
-  padding: 0.5rem;
-  margin-block: 0.5rem;
-
-  @media (max-width: 550px){    
-    font-size: 1rem;  
-    padding: 0.25rem 0.5rem;
-  }
-`;
-
 export const ErrorDescription = styled.p`
   margin-bottom: 1rem;
   border-left: 0.1rem solid ${({theme}) => theme['red-400']};
