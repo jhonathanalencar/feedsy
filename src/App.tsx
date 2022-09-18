@@ -4,14 +4,17 @@ import { defaultTheme } from './styles/themes/default';
 import { Router } from './Router';
 import { GLobalStyle } from './styles/global';
 import { GlobalContextProvider } from './contexts/GlobalContext';
+import { AuthContextProvider } from './contexts/AuthContext';
 
 export function App(){
   return(
     <ThemeProvider theme={defaultTheme}>
       <GlobalContextProvider>
-        <BrowserRouter>
-          <Router />
-        </BrowserRouter>
+        <AuthContextProvider>
+          <BrowserRouter>
+            <Router />
+          </BrowserRouter>
+        </AuthContextProvider>
       </GlobalContextProvider>
       <GLobalStyle />
     </ThemeProvider>

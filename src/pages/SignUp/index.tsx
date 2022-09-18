@@ -4,16 +4,11 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as zod from 'zod';
 import bcryptjs from 'bcryptjs';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { 
-  serverTimestamp, 
-  setDoc, 
-  doc,
-  collection,
-  getDocs,
-} from 'firebase/firestore';
 
-import { auth, db } from '../../services/firebase';
+import { checkDuplicatedUsername, createNewUser } from '../../hooks/useFirebase';
+
+import { AlertMessage } from '../../components/AlertMessage';
+import { Loading } from '../../components/Loading';
 
 const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 
@@ -27,8 +22,6 @@ import {
   SignupButton,
   Text,
 } from './styles';
-import { AlertMessage } from '../../components/AlertMessage';
-import { Loading } from '../../components/Loading';
 
 const signupFormValidationSchema = zod.object({
   username: zod
@@ -84,15 +77,7 @@ export function SignUp(){
     try{
       const { username, email, password } = data;
 
-      let isDuplicatedUsername = false;
-
-      const querySnapshot = await getDocs(collection(db, "users"));
-
-      querySnapshot.forEach((doc) => {
-        if(doc.data().username.toLowerCase() === username.toLowerCase()){
-            isDuplicatedUsername = true;
-          }
-      });
+      const isDuplicatedUsername = await checkDuplicatedUsername(username);
 
       if(isDuplicatedUsername){
         setFormAlert({
@@ -105,21 +90,14 @@ export function SignUp(){
 
       const hashedPassword = bcryptjs.hashSync(password, 10);
 
-      const response = await createUserWithEmailAndPassword(auth, data.email, hashedPassword);
+      await createNewUser(username, email, password);
 
-      await setDoc(doc(db, "users", response.user.uid), {
-        username,
-        password: hashedPassword,
-        email,
-        createdAt: serverTimestamp(),
-      });
-
-      reset();
       setFormAlert({
         type: 'success',
         message: 'Registration successful'
       });
-
+      
+      reset();
       navigate('/signin');
     }catch(error: any){
       if(error.code === 'auth/email-already-in-use'){

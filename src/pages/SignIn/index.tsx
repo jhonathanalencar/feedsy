@@ -3,18 +3,24 @@ import { Link } from 'react-router-dom';
 import { useForm, FormProvider } from 'react-hook-form';
 import * as zod from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../../services/firebase';
+import bcryptjs from 'bcryptjs';
 
 import {
   SigninContainer,
   Form,
   HeadingContainer,
-  Error,
   Label,
   Input,
   CheckboxContainer,
   SigninButton,
   SignupText,
 } from './styles';
+import { getUserByEmail } from '../../hooks/useFirebase';
+import { AlertMessage } from '../../components/AlertMessage';
+import { Loading } from '../../components/Loading';
+import { useAuthContext } from '../../hooks/useAuthContext';
 
 const signinFormValidationSchema = zod.object({
   email: zod.string().email().trim(),
@@ -24,9 +30,16 @@ const signinFormValidationSchema = zod.object({
 
 type SigninFormData = zod.infer<typeof signinFormValidationSchema>
 
+interface FormAlert{
+  type: 'error' | 'success';
+  message: string;
+}
+
 export function SignIn(){
   const errorRef = useRef<HTMLSpanElement>(null);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [formAlert, setFormAlert] = useState({} as FormAlert);
+
+  const { signInUser, rememberUserCredentials  } = useAuthContext();
 
   const signinForm = useForm<SigninFormData>({ 
     resolver: zodResolver(signinFormValidationSchema), 
@@ -48,11 +61,57 @@ export function SignIn(){
 
   const isEmptyFields = !watch().email || !watch().password;
 
-  function onSubmit(data: SigninFormData){
-    console.log(data);
-    reset();
-  }
+  async function onSubmit(data: SigninFormData){
+    try{
+      const { email, password, remember } = data;
 
+      const foundUserPassword = await getUserByEmail(email);
+
+      if(!foundUserPassword){
+        setFormAlert({
+          type: 'error',
+          message: 'Invalid email or password',
+        });
+        return;
+      }
+
+      const isMatch = bcryptjs.compareSync(password, foundUserPassword);
+
+      if(isMatch){
+        const response = await signInWithEmailAndPassword(auth, email, foundUserPassword);
+
+        setFormAlert({
+          type: 'success',
+          message: 'Sign In Successful'
+        });
+
+        signInUser(response.user);
+
+        rememberUserCredentials(remember);
+
+        reset();
+      }else{
+        setFormAlert({
+          type: 'error',
+          message: 'Invalid email or password',
+        });
+        return;
+      }
+    }catch(error: any){
+      if(error.code === 'auth/too-many-requests'){
+        setFormAlert({
+          type: 'error',
+          message: 'Too many requests. Please try again later.'
+        });
+      }else if(error.code === 'auth/wrong-password'){
+        setFormAlert({
+          type: 'error',
+          message: 'Invalid email or password',
+        });
+      }
+    }
+  }
+  
   useEffect(() =>{
     setFocus('email');
   }, []);
@@ -65,8 +124,13 @@ export function SignIn(){
               <span>Welcome back</span>
               <strong>Sign In to your account</strong>
             </HeadingContainer>
-            {errorMessage && (
-              <Error ref={errorRef} aria-live="assertive">{errorMessage}</Error>
+            {formAlert.message && (
+              <AlertMessage 
+                alertRef={errorRef}
+                type={formAlert.type}
+                message={formAlert.message}
+                aria-live="assertive"
+              />
             )}
             <Label htmlFor="username">
               Email
@@ -106,7 +170,11 @@ export function SignIn(){
             <SigninButton
               disabled={isEmptyFields || isSubmitting}
             >
-              Sign in
+              {isSubmitting ? (
+                <Loading />
+              ) : (
+                'Sign in'
+              )}
             </SigninButton>
             <SignupText>Don't have an account? <Link to="/signup">Sign up now</Link></SignupText>
         </Form>
