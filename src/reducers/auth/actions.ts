@@ -41,3 +41,19 @@ export function updateUserAction(user: UserType):{
     },
   }
 }
+
+export function signoutUserAction():{
+  type: ActionTypes.SIGNOUT_USER;
+}{
+  return{
+    type: ActionTypes.SIGNOUT_USER,
+  }
+}
+
+export function deleteUserAction():{
+  type: ActionTypes.DELETE_USER;
+}{
+  return{
+    type: ActionTypes.DELETE_USER,
+  }
+}

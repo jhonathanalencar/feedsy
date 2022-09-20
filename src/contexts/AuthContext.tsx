@@ -1,5 +1,10 @@
 import { createContext, ReactNode, useEffect, useReducer } from "react";
-import { rememberUserCredentialsAction, signInUserAction, updateUserAction } from "../reducers/auth/actions";
+import { 
+  rememberUserCredentialsAction, 
+  signInUserAction, 
+  updateUserAction,
+  signoutUserAction,
+} from "../reducers/auth/actions";
 import { authReducer } from "../reducers/auth/reducer";
 import { UserType } from "../reducers/auth/types";
 
@@ -8,6 +13,7 @@ interface AuthContextData{
   signInUser: (user: UserType) => void;
   rememberUserCredentials: (isChecked: boolean) => void;
   updateUser: (user: UserType) => void;
+  signOutUser: () => void;
 }
 
 interface AuthContextProviderProps{
@@ -26,7 +32,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps){
     authReducer,
     initialState,
     () =>{
-      const storedStateAsJson = localStorage.getItem('@feedsy:auth-state-1.0');
+      const storedStateAsJson = localStorage.getItem('@feedsy:auth-state-0.0.1');
       
       if(storedStateAsJson){
         return JSON.parse(storedStateAsJson);
@@ -50,11 +56,17 @@ export function AuthContextProvider({ children }: AuthContextProviderProps){
     dispatch(updateUserAction(user));
   }
 
+  function signOutUser(){
+    dispatch(signoutUserAction());
+
+    localStorage.removeItem('@feedsy:auth-state-0.0.1');
+  }
+
   useEffect(() =>{
     if(persist){
       const stateJSON = JSON.stringify(authState);
   
-      localStorage.setItem('@feedsy:auth-state-1.0', stateJSON);
+      localStorage.setItem('@feedsy:auth-state-0.0.1', stateJSON);
     }
   }, [authState]);
 
@@ -64,6 +76,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps){
       signInUser,
       rememberUserCredentials,
       updateUser,
+      signOutUser,
     }}>
       {children}
     </AuthContext.Provider>

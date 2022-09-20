@@ -56,6 +56,18 @@ export const ProfilePhoto = styled.div<{isUploading: boolean}>`
     animation: fadeIn 1s ease-in;
   }
 
+  label{
+    cursor: ${({isUploading}) => isUploading ? 'not-allowed' : 'pointer'};
+
+    &:hover{
+      background-color: ${(props) => 
+        props.isUploading 
+          ? props.theme['gray-700'] 
+          : lighten(0.015, props.theme['gray-600'])
+      };
+    }
+  }
+
   @keyframes fadeIn{
     0%{
       opacity: 0;
@@ -74,13 +86,9 @@ export const FileLabel = styled.label`
   justify-content: center;
   flex-direction: column;
   gap: 0.5rem;
-  cursor: pointer;
   color: ${({theme}) => theme['gray-200']};
   transition: background-color .3s ease;
 
-  &:hover{
-    background-color: ${({theme}) => lighten(0.015, theme['gray-600'])};
-  }
   
   svg{
     height: 1.75rem;
@@ -162,16 +170,14 @@ const Button = styled.button`
   padding: 0.25rem 1rem;
   font-size: 1rem;
   text-transform: uppercase;
-  cursor: pointer;
   border-radius: 0.25rem;
   font-weight: bold;
   border: none;
   color: ${({theme}) => theme['gray-100']};
   letter-spacing: 0.05rem;
   transition: opacity 0.3s linear;
-  opacity: 0.8;
 
-  &:hover{
+  &:not(:disabled):hover{
     opacity: 1;
   }
 
@@ -180,10 +186,14 @@ const Button = styled.button`
   }
 `;
 
-export const DeleteButton = styled(Button)`
+export const DeleteButton = styled(Button)<{isLoading: boolean}>`
   background-color: ${({theme}) => theme['red-500']};
+  opacity: ${({isLoading}) => isLoading ? 0.6 : 0.8};
+  cursor: ${({isLoading}) => isLoading ? 'not-allowed' : 'pointer'};
 `;
 
-export const SignOutButton = styled(Button)`
+export const SignOutButton = styled(Button)<{isLoading: boolean}>`
   background-color: ${({theme}) => theme['yellow-500']};
+  opacity: ${({isLoading}) => isLoading ? 0.6 : 0.8};
+  cursor: ${({isLoading}) => isLoading ? 'not-allowed' : 'pointer'};
 `;

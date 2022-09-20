@@ -1,5 +1,3 @@
-import { collection, getDocs } from 'firebase/firestore';
-import { User } from 'firebase/auth';
 import { produce } from 'immer';
 import { UserType } from './types';
 
@@ -25,6 +23,17 @@ export function authReducer(state: AuthState, action: Action){
     case ActionTypes.UPDATE_USER:{
       return produce(state, (draft) =>{
         draft.user = action.payload.user;
+      });
+    }
+    case ActionTypes.SIGNOUT_USER:{
+      return produce(state, (draft) =>{
+        draft.user = null;
+        draft.persist = false;
+      });
+    }
+    case ActionTypes.DELETE_USER:{
+      return produce(state, (draft) =>{
+        draft.user = null;
       });
     }
     default:

@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { Clock, Envelope, FileImage, User } from 'phosphor-react';
 import { collection, onSnapshot, Timestamp } from 'firebase/firestore';
+import { deleteUser, signInWithEmailAndPassword } from 'firebase/auth';
 import { format } from 'date-fns';
 
 import { AlertMessage } from '../../components/AlertMessage';
 import { Loading } from '../../components/Loading';
 
-import { db } from '../../services/firebase';
-import { uploadFileToStorage } from '../../hooks/useFirebase';
+import { auth, db } from '../../services/firebase';
+import { deleteFromFirebase, getUserByEmail, signOutUserFromFirebase, uploadFileToStorage } from '../../hooks/useFirebase';
 import { useAuthContext } from '../../hooks/useAuthContext';
 
 
@@ -33,11 +34,12 @@ interface Alert{
 }
 
 export function Profile(){
-  const { user, updateUser } = useAuthContext();
+  const { user, updateUser, signOutUser } = useAuthContext();
   const [alert, setAlert] = useState({} as Alert);
   const [pictureFile, setPictureFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const errorRef = useRef<HTMLSpanElement | null>(null);
 
   let formattedDate: Date | null = null;
@@ -91,6 +93,38 @@ export function Profile(){
       changeUploadState,
       changeUploadProgress,
     );
+  }
+
+  async function handleSignOut(){
+    try{
+      await signOutUserFromFirebase();
+
+      signOutUser();
+    }catch(error: any){
+      console.log(error.code);
+      console.log(error.message);
+    }
+  }
+
+  async function handleDeleteUser(){
+    try{
+      if(!user){ return; }
+
+      setIsLoading(true);
+
+      const tempUser = await getUserByEmail(user.email);
+
+      const userCredentials = await signInWithEmailAndPassword(auth, tempUser.email, tempUser.password);
+
+      await deleteFromFirebase(userCredentials.user.uid);
+      await deleteUser(userCredentials.user);
+
+      signOutUser();
+      setIsLoading(false);
+    }catch(error: any){
+      console.log(error.code);
+      console.log(error.message);
+    }
   }
 
   useEffect(() =>{
@@ -184,8 +218,22 @@ export function Profile(){
               )} 
             </ProfileInfo>
             <ProfileButtons>
-              <DeleteButton>Delete</DeleteButton>
-              <SignOutButton>Sign out</SignOutButton>
+              <DeleteButton
+                type="button"
+                onClick={handleDeleteUser}
+                disabled={isLoading}
+                isLoading={isLoading}
+              >
+                Delete
+              </DeleteButton>
+              <SignOutButton
+                type="button"
+                onClick={handleSignOut}
+                disabled={isLoading}
+                isLoading={isLoading}
+              >
+                Sign out
+              </SignOutButton>
             </ProfileButtons>
           </ProfileInfoContainer>
         </ProfileContent>

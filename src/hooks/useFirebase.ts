@@ -1,5 +1,5 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { collection, doc, getDocs, serverTimestamp, setDoc, Timestamp, updateDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
+import { collection, deleteDoc, doc, getDoc, getDocs, serverTimestamp, setDoc, Timestamp, updateDoc } from "firebase/firestore";
 import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { auth, db, storage } from "../services/firebase";
 
@@ -97,5 +97,24 @@ export async function uploadFileToStorage(
     }
   );
 }
+
+export async function signOutUserFromFirebase(){
+  await signOut(auth);
+}
+
+export async function deleteFromFirebase(userId: string){
+  const userRef = doc(db, "users", userId);
+  const userDocument = await getDoc(userRef);
+  
+  await deleteDoc(userRef);
+
+  const userData = userDocument.data() as UserType;
+
+  if(userData.userAvatar){
+    const profilePictureRef = ref(storage, userData.userAvatar);
+    await deleteObject(profilePictureRef);
+  }
+}
+
  
           

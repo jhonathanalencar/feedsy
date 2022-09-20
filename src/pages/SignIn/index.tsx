@@ -5,7 +5,7 @@ import * as zod from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import bcryptjs from 'bcryptjs';
 import { Eye, EyeSlash } from 'phosphor-react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, deleteUser } from 'firebase/auth';
 
 import { auth } from '../../services/firebase';
 import { getUserByEmail } from '../../hooks/useFirebase';

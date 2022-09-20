@@ -13,6 +13,8 @@ export enum ActionTypes{
   SIGNIN_USER = 'SIGNIN_USER',
   REMEMBER_USER = 'REMEMBER_USER',
   UPDATE_USER = 'UPDATE_USER',
+  SIGNOUT_USER = 'SIGNOUT_USER',
+  DELETE_USER = 'DELETE_USER',
 }
 
 interface SignInUserAction{
@@ -36,4 +38,17 @@ interface UpdateUserAction{
   };
 }
 
-export type Action = SignInUserAction | RememberUserCredentialsAction | UpdateUserAction;
+interface SignOutUserAction{
+  type: ActionTypes.SIGNOUT_USER;
+}
+
+interface DeleteUserAction{
+  type: ActionTypes.DELETE_USER;
+}
+
+export type Action = 
+  SignInUserAction | 
+  RememberUserCredentialsAction | 
+  UpdateUserAction |
+  SignOutUserAction |
+  DeleteUserAction;
