@@ -1,10 +1,12 @@
 import styled from 'styled-components';
+import { lighten } from 'polished';
 
 export const ProfileContainer = styled.div`
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
   padding-inline: 1rem;
 `;
 
@@ -22,6 +24,7 @@ export const ProfileContent = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
+  position: relative;
 
   @media (max-width: 550px){
     flex-direction: column;
@@ -29,18 +32,83 @@ export const ProfileContent = styled.div`
   }
 `;
 
-export const ProfilePhoto = styled.div`
+export const MessageErrorContainer = styled.div`
+  position: absolute;
+  content: '';
+  width: 100%;
+  top: -2rem;
+  left: 0;
+  display: flex;
+`;
+
+export const ProfilePhoto = styled.div<{isUploading: boolean}>`
   height: 8rem;
   width: 8rem;
   border-radius: 0.5rem;
   overflow: hidden;
   border: 0.2rem solid ${({theme}) => theme['green-300']};
-
+  
   img{
     width: 100%;
     height: 100%;
     object-fit: cover;
+    opacity: ${({isUploading}) => isUploading ? 0.6 : 1};
+    animation: fadeIn 1s ease-in;
   }
+
+  @keyframes fadeIn{
+    0%{
+      opacity: 0;
+    }
+    100%{
+      opacity: 1;
+    }
+  }
+`;
+
+export const FileLabel = styled.label`
+  height: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: ${({theme}) => theme['gray-200']};
+  transition: background-color .3s ease;
+
+  &:hover{
+    background-color: ${({theme}) => lighten(0.015, theme['gray-600'])};
+  }
+  
+  svg{
+    height: 1.75rem;
+    width: 1.75rem;
+  }
+
+  span{
+    font-size: 1rem;
+    width: min-content;
+    text-align: center;
+    color: ${({theme}) => theme['gray-300']};
+  }
+`;
+
+export const FileInput = styled.input`
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+`;
+
+export const LoadingContainer = styled.div`
+  position: absolute;
 `;
 
 export const ProfileInfoContainer = styled.div`
@@ -48,6 +116,7 @@ export const ProfileInfoContainer = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 0.5rem;
+  margin-top: 0.5rem;
 `;
 
 export const ProfileInfo = styled.div`

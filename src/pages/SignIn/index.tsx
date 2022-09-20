@@ -3,9 +3,17 @@ import { Link } from 'react-router-dom';
 import { useForm, FormProvider } from 'react-hook-form';
 import * as zod from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../services/firebase';
 import bcryptjs from 'bcryptjs';
+import { Eye, EyeSlash } from 'phosphor-react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+
+import { auth } from '../../services/firebase';
+import { getUserByEmail } from '../../hooks/useFirebase';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { UserType } from '../../reducers/auth/types';
+
+import { AlertMessage } from '../../components/AlertMessage';
+import { Loading } from '../../components/Loading';
 
 import {
   SigninContainer,
@@ -13,14 +21,12 @@ import {
   HeadingContainer,
   Label,
   Input,
+  PasswordInputContainer,
+  ShowPasswordButton,
   CheckboxContainer,
   SigninButton,
   SignupText,
 } from './styles';
-import { getUserByEmail } from '../../hooks/useFirebase';
-import { AlertMessage } from '../../components/AlertMessage';
-import { Loading } from '../../components/Loading';
-import { useAuthContext } from '../../hooks/useAuthContext';
 
 const signinFormValidationSchema = zod.object({
   email: zod.string().email().trim(),
@@ -37,6 +43,7 @@ interface FormAlert{
 
 export function SignIn(){
   const errorRef = useRef<HTMLSpanElement>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [formAlert, setFormAlert] = useState({} as FormAlert);
 
   const { signInUser, rememberUserCredentials  } = useAuthContext();
@@ -65,9 +72,9 @@ export function SignIn(){
     try{
       const { email, password, remember } = data;
 
-      const foundUserPassword = await getUserByEmail(email);
+      const foundUser = await getUserByEmail(email);
 
-      if(!foundUserPassword){
+      if(!foundUser){
         setFormAlert({
           type: 'error',
           message: 'Invalid email or password',
@@ -75,17 +82,24 @@ export function SignIn(){
         return;
       }
 
-      const isMatch = bcryptjs.compareSync(password, foundUserPassword);
+      const isMatch = bcryptjs.compareSync(password, foundUser.password);
 
       if(isMatch){
-        const response = await signInWithEmailAndPassword(auth, email, foundUserPassword);
+        const response = await signInWithEmailAndPassword(auth, email, foundUser.password);
 
         setFormAlert({
           type: 'success',
           message: 'Sign In Successful'
         });
 
-        signInUser(response.user);
+        const tempUser: UserType = {
+          id: response.user.uid,
+          email: foundUser.email,
+          username: foundUser.username,
+          createdAt: foundUser.createdAt,
+        }
+
+        signInUser(tempUser);
 
         rememberUserCredentials(remember);
 
@@ -148,15 +162,27 @@ export function SignIn(){
             <Label htmlFor="password">
               Password
             </Label>
-            <Input 
-              type="password"
-              id="password"
-              autoComplete="off"
-              placeholder="Enter password"
-              required
-              disabled={isSubmitting}
-              {...register('password')}
-            />
+            <PasswordInputContainer>
+              <Input 
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                autoComplete="off"
+                placeholder="Enter password"
+                required
+                disabled={isSubmitting}
+                {...register('password')}
+              />
+              <ShowPasswordButton
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+              >
+                {showPassword ? (
+                  <EyeSlash />
+                ) : (
+                  <Eye />
+                )}
+              </ShowPasswordButton>
+            </PasswordInputContainer> 
             <CheckboxContainer>
               <Input 
                 type="checkbox" 

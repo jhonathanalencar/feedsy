@@ -50,21 +50,6 @@ export const HeadingContainer = styled.div`
   }
 `;
 
-export const Error = styled.span`
-  width: 100%;
-  background-color: ${(props) => props.theme['red-500']};
-  color: ${(props) => props.theme['gray-100']};
-  font-size: 1.1rem;
-  font-weight: 600;
-  padding: 0.5rem;
-  margin-block: 0.5rem;
-
-  @media (max-width: 550px){    
-    font-size: 1rem;  
-    padding: 0.25rem 0.5rem;
-  }
-`;
-
 export const Label = styled.label`
   color: ${({theme}) => theme['gray-600']};
   font-weight: 600;
@@ -83,9 +68,30 @@ export const Input = styled.input`
   padding: 0 0.5rem;
   font-size: 1rem;
   border: 0.2rem solid ${({theme}) => theme['purple-500']};
+  width: 100%;
   
   &::placeholder{
     color: ${({theme}) => theme['gray-500']};
+  }
+`;
+
+export const PasswordInputContainer = styled.div`
+  position: relative;
+`;
+
+export const ShowPasswordButton = styled.button`
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  display: inline-flex;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  svg{
+    height: 1.5rem;
+    width: 1.5rem;
+    color: ${({theme}) => theme['purple-500']};
   }
 `;
 

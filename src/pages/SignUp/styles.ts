@@ -74,14 +74,35 @@ export const Label = styled.label`
 
 export const Input = styled.input`
   height: 2.5rem;
+  width: 100%;
   border-radius: 0.25rem;
   margin-bottom: 1rem;
-  padding: 0 0.5rem;
+  padding: 0 2.5rem 0 0.5rem;
   font-size: 1rem;
   border: 0.2rem solid ${({theme}) => theme['purple-500']};
   
   &::placeholder{
     color: ${({theme}) => theme['gray-500']};
+  }
+`;
+
+export const PasswordInputContainer = styled.div`
+  position: relative;
+`;
+
+export const ShowPasswordButton = styled.button`
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  display: inline-flex;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  svg{
+    height: 1.5rem;
+    width: 1.5rem;
+    color: ${({theme}) => theme['purple-500']};
   }
 `;
 

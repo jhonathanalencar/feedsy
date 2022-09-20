@@ -1,6 +1,9 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { collection, doc, getDocs, serverTimestamp, setDoc } from "firebase/firestore";
-import { auth, db } from "../services/firebase";
+import { collection, doc, getDocs, serverTimestamp, setDoc, Timestamp, updateDoc } from "firebase/firestore";
+import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { auth, db, storage } from "../services/firebase";
+
+import { UserType } from "../reducers/auth/types";
 
 export async function checkDuplicatedUsername(username: string){
   let isDuplicatedUsername = false;
@@ -28,11 +31,10 @@ export async function createNewUser(username: string, email: string, password: s
 }
 
 type User = {
-  id: string;
-  createdAt?: Date;
-  username?: string;
-  email?: string;
-  password?: string;
+  username: string;
+  email: string;
+  password: string;
+  createdAt: Timestamp;
 }
 
 export async function getUserByEmail(email: string){
@@ -47,7 +49,53 @@ export async function getUserByEmail(email: string){
     }
   });
 
-  return foundUser?.data().password;
+  return foundUser?.data() as User;
+}
+
+export async function uploadFileToStorage(
+  user: UserType,
+  fileName: string, 
+  file: File, 
+  changeUploadState: (state: boolean) => void,
+  changeUploadProgress: (progress: number) => void
+){
+  const storageRef = ref(storage, `images/${fileName}`);
+
+  const uploadTask = uploadBytesResumable(storageRef, file);
+
+  uploadTask.on('state_changed',
+    (snapshot) =>{
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      changeUploadProgress(progress);
+      changeUploadState(true);
+    },
+    (error) =>{
+      console.log(error);
+    },
+    () =>{
+      getDownloadURL(uploadTask.snapshot.ref)
+        .then(async (downloadURL) =>{
+          if(user && user.id){ 
+            const userRef = doc(db, "users", user.id);
+
+            if(user.userAvatar){
+              const oldProfilePictureRef = ref(storage, user.userAvatar);
+              await deleteObject(oldProfilePictureRef);
+            }
+  
+            await updateDoc(userRef, {
+              userAvatar: downloadURL,
+            });
+
+            changeUploadState(false);
+          }
+        })
+        .catch((error: any) =>{
+          console.log(error.code);
+          console.log(error.message);
+        })
+    }
+  );
 }
  
           

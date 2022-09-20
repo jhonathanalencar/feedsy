@@ -1,20 +1,13 @@
 import { createContext, ReactNode, useEffect, useReducer } from "react";
-import { rememberUserCredentialsAction, signInUserAction } from "../reducers/auth/actions";
+import { rememberUserCredentialsAction, signInUserAction, updateUserAction } from "../reducers/auth/actions";
 import { authReducer } from "../reducers/auth/reducer";
-import { User } from 'firebase/auth'
-
-// interface User{
-//   id: string;
-//   email: string;
-//   username: string;
-//   createdAt: Date;
-//   userAvatar?: string;
-// }
+import { UserType } from "../reducers/auth/types";
 
 interface AuthContextData{
-  user: User | null;
-  signInUser: (user: User) => void;
+  user: UserType | null;
+  signInUser: (user: UserType) => void;
   rememberUserCredentials: (isChecked: boolean) => void;
+  updateUser: (user: UserType) => void;
 }
 
 interface AuthContextProviderProps{
@@ -45,12 +38,16 @@ export function AuthContextProvider({ children }: AuthContextProviderProps){
 
   const { user, persist } = authState;
 
-  function signInUser(user: User){
+  function signInUser(user: UserType){
     dispatch(signInUserAction(user));
   }
 
   function rememberUserCredentials(isChecked: boolean){
     dispatch(rememberUserCredentialsAction(isChecked));
+  }
+
+  function updateUser(user: UserType){
+    dispatch(updateUserAction(user));
   }
 
   useEffect(() =>{
@@ -66,6 +63,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps){
       user,
       signInUser,
       rememberUserCredentials,
+      updateUser,
     }}>
       {children}
     </AuthContext.Provider>

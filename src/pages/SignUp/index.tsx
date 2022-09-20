@@ -4,6 +4,7 @@ import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as zod from 'zod';
 import bcryptjs from 'bcryptjs';
+import { Eye, EyeSlash } from 'phosphor-react';
 
 import { checkDuplicatedUsername, createNewUser } from '../../hooks/useFirebase';
 
@@ -19,6 +20,8 @@ import {
   ErrorDescription,
   Label,
   Input,
+  PasswordInputContainer,
+  ShowPasswordButton,
   SignupButton,
   Text,
 } from './styles';
@@ -50,6 +53,8 @@ type FormAlert = {
 
 export function SignUp(){
   const alertRef = useRef<HTMLSpanElement>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formAlert, setFormAlert] = useState({} as FormAlert);
 
   const navigate = useNavigate();
@@ -90,7 +95,7 @@ export function SignUp(){
 
       const hashedPassword = bcryptjs.hashSync(password, 10);
 
-      await createNewUser(username, email, password);
+      await createNewUser(username, email, hashedPassword);
 
       setFormAlert({
         type: 'success',
@@ -191,17 +196,30 @@ export function SignUp(){
           <Label htmlFor="password">
             Password
           </Label>
-          <Input 
-            type="password" 
-            id="password"
-            placeholder="Enter password"
-            autoComplete="off"
-            required
-            disabled={isSubmitting}
-            aria-invalid={errors.password ? true : false}
-            aria-describedby="passwordnote"
-            {...register('password')}
-          />
+          <PasswordInputContainer>
+            <Input 
+              type={showPassword ? 'text' : 'password'} 
+              id="password"
+              placeholder="Enter password"
+              autoComplete="off"
+              required
+              disabled={isSubmitting}
+              aria-invalid={errors.password ? true : false}
+              aria-describedby="passwordnote"
+              {...register('password')}
+            />
+            
+            <ShowPasswordButton
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+            >
+              {showPassword ? (
+                <EyeSlash />
+              ) : (
+                <Eye />
+              )}
+            </ShowPasswordButton>
+          </PasswordInputContainer>
 
           {errors.password && (
             <ErrorDescription id="passwordnote" aria-live="assertive">
@@ -212,17 +230,31 @@ export function SignUp(){
           <Label htmlFor="confirmPassword">
             Confirm Passoword
           </Label>
-          <Input 
-            type="password" 
-            id="confirmPassword"
-            placeholder="Enter password"
-            autoComplete="off"
-            required
-            disabled={isSubmitting}
-            aria-invalid={errors.confirmPassword ? true : false}
-            aria-describedby="confirmnote"
-            {...register('confirmPassword')}
-          />
+          <PasswordInputContainer>
+            <Input 
+              type={showConfirmPassword ? 'text' : 'password'} 
+              id="confirmPassword"
+              placeholder="Enter password"
+              autoComplete="off"
+              required
+              disabled={isSubmitting}
+              aria-invalid={errors.confirmPassword ? true : false}
+              aria-describedby="confirmnote"
+              {...register('confirmPassword')}
+            />
+
+            <ShowPasswordButton
+              type="button"
+              onClick={() => setShowConfirmPassword((prev) => !prev)}
+            >
+              {showConfirmPassword ? (
+                <EyeSlash />
+              ) : (
+                <Eye />
+              )}
+            </ShowPasswordButton>
+          </PasswordInputContainer>
+
           {errors.confirmPassword && (
             <ErrorDescription id="confirmnote" aria-live="assertive">
               <span>{errors.confirmPassword.message}</span>

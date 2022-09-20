@@ -34,7 +34,7 @@ export function DefaultLayout(){
       </HeaderContainer>
       <Outlet />
       <FooterContainer>
-        <span>Made by Jhonathan。</span>
+        <span>Coded by Jhonathan。</span>
       </FooterContainer>
     </LayoutContainer>
   )
