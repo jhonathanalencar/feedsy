@@ -6,7 +6,7 @@ export const LayoutContainer = styled.div`
   flex: 1;
   width: 100%;
   min-height: 100vh;
-  background-color: ${(props) => props.theme['gray-600']};
+  background-color: ${(props) => props.theme['gray-800']};
 `;
 
 export const HeaderContainer = styled.header`

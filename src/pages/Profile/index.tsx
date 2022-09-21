@@ -3,14 +3,16 @@ import { Clock, Envelope, FileImage, User } from 'phosphor-react';
 import { collection, onSnapshot, Timestamp } from 'firebase/firestore';
 import { deleteUser, signInWithEmailAndPassword } from 'firebase/auth';
 import { format } from 'date-fns';
+import { CSSTransition } from 'react-transition-group';
 
 import { AlertMessage } from '../../components/AlertMessage';
+import { AlertModal } from '../../components/AlertModal';
 import { Loading } from '../../components/Loading';
 
 import { auth, db } from '../../services/firebase';
 import { deleteFromFirebase, getUserByEmail, signOutUserFromFirebase, uploadFileToStorage } from '../../hooks/useFirebase';
 import { useAuthContext } from '../../hooks/useAuthContext';
-
+import { useGlobalContext } from '../../hooks/useGlobalContext';
 
 import {
   ProfileContainer,
@@ -35,12 +37,15 @@ interface Alert{
 
 export function Profile(){
   const { user, updateUser, signOutUser } = useAuthContext();
+  const { isModalOpen, openModal } = useGlobalContext();
+
   const [alert, setAlert] = useState({} as Alert);
   const [pictureFile, setPictureFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const errorRef = useRef<HTMLSpanElement | null>(null);
+  const modalRef = useRef<HTMLDivElement | null>(null);
 
   let formattedDate: Date | null = null;
 
@@ -160,7 +165,7 @@ export function Profile(){
       unsubscribe();
     }
   }, []);
-
+  
   return(
     <ProfileContainer>
       <ProfileBackground>
@@ -220,11 +225,15 @@ export function Profile(){
             <ProfileButtons>
               <DeleteButton
                 type="button"
-                onClick={handleDeleteUser}
+                onClick={openModal}
                 disabled={isLoading}
                 isLoading={isLoading}
               >
-                Delete
+                {isLoading ? (
+                  <Loading />
+                ) : (
+                  'Delete'
+                )}
               </DeleteButton>
               <SignOutButton
                 type="button"
@@ -232,12 +241,30 @@ export function Profile(){
                 disabled={isLoading}
                 isLoading={isLoading}
               >
-                Sign out
+                {isLoading ? (
+                  <Loading />
+                ) : (
+                  'Sign out'
+                )}
               </SignOutButton>
             </ProfileButtons>
           </ProfileInfoContainer>
         </ProfileContent>
       </ProfileBackground>
+          <CSSTransition 
+            in={isModalOpen} 
+            nodeRef={modalRef}
+            timeout={500} 
+            unmountOnExit
+            classNames="modal-fade"
+          >
+            <AlertModal 
+              overlayRef={modalRef}
+              warning="Delete account"
+              description="Are you sure you want to permanently delete your account?"
+              handle={handleDeleteUser}
+            />
+          </CSSTransition>
     </ProfileContainer>
   )
 }

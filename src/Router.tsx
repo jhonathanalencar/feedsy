@@ -7,12 +7,22 @@ import { Profile } from './pages/Profile';
 import { SignIn } from './pages/SignIn';
 import { SignUp } from './pages/SignUp';
 
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { useAuthContext } from './hooks/useAuthContext';
+
 export function Router(){
+  const { user } = useAuthContext();
+
   return(
     <Routes>
       <Route path="/" element={<DefaultLayout />}>
         <Route index element={<Home />} />
-        <Route path="profile" element={<Profile />} />
+        <Route path="profile" element={
+            <ProtectedRoute user={user}>
+              <Profile />
+            </ProtectedRoute>
+          } 
+        />
         <Route element={<AuthenticationLayout />}>
           <Route path="signin" element={<SignIn />} />
           <Route path="signup" element={<SignUp />} />

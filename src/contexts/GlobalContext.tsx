@@ -5,6 +5,9 @@ interface GlobalContextData{
   dropdownButtonRef: RefObject<HTMLLIElement>;
   toggleDropdownMenu: () => void;
   closeDropdownMenu: () => void;
+  isModalOpen: boolean;
+  closeModal: () => void;
+  openModal: () => void;
 }
 
 interface GlobalContextProviderProps{
@@ -16,6 +19,7 @@ export const GlobalContext = createContext({} as GlobalContextData);
 export function GlobalContextProvider({ children }: GlobalContextProviderProps){
   const dropdownButtonRef = useRef<HTMLLIElement>(null);
   const [isDropdownMenuOpen, setIsDropdownMenuOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   function closeDropdownMenu(){
     setIsDropdownMenuOpen(false);
@@ -25,12 +29,23 @@ export function GlobalContextProvider({ children }: GlobalContextProviderProps){
     setIsDropdownMenuOpen((prevState) => !prevState);
   }
 
+  function closeModal(){
+    setIsModalOpen(false);
+  }
+
+  function openModal(){
+    setIsModalOpen(true);
+  }
+
   return(
     <GlobalContext.Provider value={{
       isDropdownMenuOpen,
       dropdownButtonRef,
       toggleDropdownMenu,
       closeDropdownMenu,
+      isModalOpen,
+      closeModal,
+      openModal,
     }}>
       {children}
     </GlobalContext.Provider>

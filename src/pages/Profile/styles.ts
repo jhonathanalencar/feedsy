@@ -8,6 +8,21 @@ export const ProfileContainer = styled.div`
   justify-content: center;
   flex-direction: column;
   padding-inline: 1rem;
+
+  .modal-fade-enter {
+    opacity: 0;
+  }
+  .modal-fade-enter-active {
+    opacity: 1;
+    transition: all .5s ease-in;
+  }
+  .modal-fade-exit {
+    opacity: 1;
+  }
+  .modal-fade-exit-active {
+    opacity: 0;
+    transition: all .5s ease-out;
+  }
 `;
 
 export const ProfileBackground = styled.div`
@@ -176,6 +191,7 @@ const Button = styled.button`
   color: ${({theme}) => theme['gray-100']};
   letter-spacing: 0.05rem;
   transition: opacity 0.3s linear;
+  flex: 1;
 
   &:not(:disabled):hover{
     opacity: 1;
@@ -187,6 +203,8 @@ const Button = styled.button`
 `;
 
 export const DeleteButton = styled(Button)<{isLoading: boolean}>`
+  align-self: stretch;
+
   background-color: ${({theme}) => theme['red-500']};
   opacity: ${({isLoading}) => isLoading ? 0.6 : 0.8};
   cursor: ${({isLoading}) => isLoading ? 'not-allowed' : 'pointer'};

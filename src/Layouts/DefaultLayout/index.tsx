@@ -12,8 +12,11 @@ import {
   Logo,
   FooterContainer
 } from './styles';
+import { useAuthContext } from '../../hooks/useAuthContext';
 
 export function DefaultLayout(){
+  const { user } = useAuthContext();
+
   return(
     <LayoutContainer>
       <HeaderContainer>
@@ -24,11 +27,16 @@ export function DefaultLayout(){
             </Link>
           </Logo>
           <Navbar>
-            <NavItem icon={<Plus />} />
-            <NavItem icon={<Users />} link="/signin" />
-            <NavItem icon={<CaretDown />}>
-              <DropdownMenu />
-            </NavItem>
+            {!user ? (
+              <NavItem icon={<Users />} link="/signin" />
+            ) : (
+              <>
+                <NavItem icon={<Plus />} />
+                <NavItem icon={<CaretDown />}>
+                  <DropdownMenu />
+                </NavItem>
+              </>
+            )}
           </Navbar>
         </HeaderWrapper>
       </HeaderContainer>

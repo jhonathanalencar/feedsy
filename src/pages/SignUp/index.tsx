@@ -7,6 +7,7 @@ import bcryptjs from 'bcryptjs';
 import { Eye, EyeSlash } from 'phosphor-react';
 
 import { checkDuplicatedUsername, createNewUser } from '../../hooks/useFirebase';
+import { useAuthContext } from '../../hooks/useAuthContext';
 
 import { AlertMessage } from '../../components/AlertMessage';
 import { Loading } from '../../components/Loading';
@@ -56,6 +57,7 @@ export function SignUp(){
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formAlert, setFormAlert] = useState({} as FormAlert);
+  const { user } = useAuthContext();
 
   const navigate = useNavigate();
 
@@ -134,6 +136,10 @@ export function SignUp(){
   }
 
   useEffect(() =>{
+    if(user){
+      navigate('/profile');
+    }
+
     setFocus('username');
   }, []);
 

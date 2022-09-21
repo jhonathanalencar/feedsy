@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm, FormProvider } from 'react-hook-form';
 import * as zod from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -46,7 +46,9 @@ export function SignIn(){
   const [showPassword, setShowPassword] = useState(false);
   const [formAlert, setFormAlert] = useState({} as FormAlert);
 
-  const { signInUser, rememberUserCredentials  } = useAuthContext();
+  const { signInUser, rememberUserCredentials, user } = useAuthContext();
+
+  const navigate = useNavigate();
 
   const signinForm = useForm<SigninFormData>({ 
     resolver: zodResolver(signinFormValidationSchema), 
@@ -104,6 +106,7 @@ export function SignIn(){
         rememberUserCredentials(remember);
 
         reset();
+        navigate('/profile');
       }else{
         setFormAlert({
           type: 'error',
@@ -125,10 +128,15 @@ export function SignIn(){
       }
     }
   }
-  
+ 
   useEffect(() =>{
+    if(user){
+      navigate('/profile');
+    }
+    
     setFocus('email');
   }, []);
+
 
   return(
     <SigninContainer>
