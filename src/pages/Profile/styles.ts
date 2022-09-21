@@ -103,7 +103,6 @@ export const FileLabel = styled.label`
   gap: 0.5rem;
   color: ${({theme}) => theme['gray-200']};
   transition: background-color .3s ease;
-
   
   svg{
     height: 1.75rem;

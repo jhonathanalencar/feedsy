@@ -1,4 +1,4 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import { CaretDown, Plus, Users } from "phosphor-react";
 
 import { Navbar } from "../../components/Navbar";
@@ -17,6 +17,8 @@ import { useAuthContext } from '../../hooks/useAuthContext';
 export function DefaultLayout(){
   const { user } = useAuthContext();
 
+  const location = useLocation();
+  
   return(
     <LayoutContainer>
       <HeaderContainer>
@@ -27,11 +29,14 @@ export function DefaultLayout(){
             </Link>
           </Logo>
           <Navbar>
+            {location.pathname === '/' && user && (
+              <NavItem icon={<Plus />} />
+            )}
+
             {!user ? (
               <NavItem icon={<Users />} link="/signin" />
             ) : (
               <>
-                <NavItem icon={<Plus />} />
                 <NavItem icon={<CaretDown />}>
                   <DropdownMenu />
                 </NavItem>

@@ -226,8 +226,8 @@ export function Profile(){
               <DeleteButton
                 type="button"
                 onClick={openModal}
-                disabled={isLoading}
                 isLoading={isLoading}
+                disabled={isLoading || isUploading}
               >
                 {isLoading ? (
                   <Loading />
@@ -238,8 +238,8 @@ export function Profile(){
               <SignOutButton
                 type="button"
                 onClick={handleSignOut}
-                disabled={isLoading}
                 isLoading={isLoading}
+                disabled={isLoading || isUploading}
               >
                 {isLoading ? (
                   <Loading />

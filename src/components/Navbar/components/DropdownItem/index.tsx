@@ -13,7 +13,14 @@ interface DropdownItemProps{
   setActiveMenu?: (menu: string) => void;
 }
 
-export function DropdownItem({ leftIcon, rightIcon, children, goToMenu, setActiveMenu, href}: DropdownItemProps){
+export function DropdownItem({ 
+  leftIcon, 
+  rightIcon, 
+  children, 
+  goToMenu, 
+  href,
+  setActiveMenu, 
+}: DropdownItemProps){
   const { closeDropdownMenu } = useGlobalContext();
 
   return(

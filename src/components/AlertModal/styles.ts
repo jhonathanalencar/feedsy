@@ -90,7 +90,7 @@ export const ButtonsContainer = styled.div`
 
 const Button = styled.button`
   text-transform: capitalize;
-  padding: 0.25rem 1rem; 
+  padding: 0.5rem 1rem; 
   font-weight: bold;
   color: ${({theme}) => theme['gray-600']};
   cursor: pointer;

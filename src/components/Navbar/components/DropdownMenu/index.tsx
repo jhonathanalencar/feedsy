@@ -103,12 +103,14 @@ export function DropdownMenu(){
           <DropdownItem 
             leftIcon={<SignOut />}
             rightIcon={<LightningSlash />}
+            href="profile"
           >
             <span>Sign Out</span>
           </DropdownItem>
           <DropdownItem 
             leftIcon={<Trash />}
             rightIcon={<CircleWavyWarning />}
+            href="profile"
           >
             <span>Delete Account</span>
           </DropdownItem>
