@@ -8,9 +8,10 @@ interface NavItemProps{
   icon: ReactNode;
   children?: ReactNode;
   link?: string;
+  handle?: () => void;
 }
 
-export function NavItem({ icon, children, link }: NavItemProps){
+export function NavItem({ icon, children, link, handle }: NavItemProps){
 
   const { isDropdownMenuOpen, toggleDropdownMenu, closeDropdownMenu, dropdownButtonRef } = useGlobalContext();
   
@@ -45,7 +46,7 @@ export function NavItem({ icon, children, link }: NavItemProps){
           {isDropdownMenuOpen && children}
         </DropdownLi>
       ) : (
-        <DropdownLi>
+        <DropdownLi onClick={handle}>
           <Link to={link ?? '#'}>
             {icon}
           </Link>

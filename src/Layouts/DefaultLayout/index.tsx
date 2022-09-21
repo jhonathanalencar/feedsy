@@ -13,14 +13,16 @@ import {
   FooterContainer
 } from './styles';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import { useGlobalContext } from '../../hooks/useGlobalContext';
 
 export function DefaultLayout(){
   const { user } = useAuthContext();
+  const { isDialogOpen, openDialog } = useGlobalContext();
 
   const location = useLocation();
   
   return(
-    <LayoutContainer>
+    <LayoutContainer isDialogOpen={isDialogOpen}>
       <HeaderContainer>
         <HeaderWrapper>
           <Logo>
@@ -30,7 +32,7 @@ export function DefaultLayout(){
           </Logo>
           <Navbar>
             {location.pathname === '/' && user && (
-              <NavItem icon={<Plus />} />
+              <NavItem icon={<Plus />} handle={openDialog} />
             )}
 
             {!user ? (

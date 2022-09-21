@@ -5,6 +5,27 @@ export const DialogContainer = styled.div`
   position: absolute;
   inset: 0;
   z-index: 9999;
+
+  .dialog-fade-enter{
+    opacity: 1;
+    transform: translateY(-100%);
+  }
+
+  .dialog-fade-enter-active{
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.5s ease-in,
+      transform .5s ease-in;
+  }
+  .dialog-fade-exit{
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .dialog-fade-exit-active{
+    opacity: 0;
+    transform: translateY(-100%);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  }
 `;
 
 export const DialogOverlay = styled.div`
@@ -56,13 +77,14 @@ export const CloseButton = styled.button`
 `;
 
 export const Form = styled.form`
+  --spacing: 1rem;
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 1rem;
   border-top: 0.1rem solid ${({theme}) => theme['gray-300']};
-  margin-top: 1rem;
-  padding-top: 1rem;
+  margin-top: var(--spacing);
+  padding-top: var(--spacing);
 
   textarea{
     border-radius: 0.25rem;
@@ -89,6 +111,10 @@ export const Form = styled.form`
       border-radius: 100vw;
     }
   }
+
+  @media (min-width: 34.375em){
+    --spacing: 2rem;
+  } 
 `;
 
 export const PublishButton = styled.button`

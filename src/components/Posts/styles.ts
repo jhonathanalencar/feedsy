@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const PostsContainer = styled.div`
   flex: 1;
-  `;
+`;
 
 export const PostsWrapper = styled.div`
   /* padding: 1rem; */

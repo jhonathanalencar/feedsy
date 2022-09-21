@@ -1,12 +1,14 @@
 import styled from "styled-components";
 
-export const LayoutContainer = styled.div`
+export const LayoutContainer = styled.div<{isDialogOpen: boolean}>`
   display: flex;
   flex-direction: column;
   flex: 1;
   width: 100%;
   min-height: 100vh;
   background-color: ${(props) => props.theme['gray-800']};
+  height: ${({isDialogOpen}) => isDialogOpen ? '100vh' : ''};
+  overflow: ${({isDialogOpen}) => isDialogOpen ? 'hidden' : ''};
 `;
 
 export const HeaderContainer = styled.header`
