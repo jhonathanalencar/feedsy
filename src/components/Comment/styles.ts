@@ -6,6 +6,7 @@ export const PostComment = styled.div`
   flex: 1;
   align-items: flex-start;
   gap: 1rem;
+  width: 100%;
 
   img{
     flex: 1;

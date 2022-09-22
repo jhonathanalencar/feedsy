@@ -1,11 +1,13 @@
-import { formatDistanceToNow } from 'date-fns';
-import { Timestamp } from 'firebase/firestore';
+import { collection, onSnapshot, orderBy, query, Timestamp, where } from 'firebase/firestore';
 import { TrashSimple } from 'phosphor-react';
-import { useRef } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { useAuthContext } from '../../hooks/useAuthContext';
-import { deletePost } from '../../hooks/useFirebase';
+import { createCommentary, deletePost } from '../../hooks/useFirebase';
 import { useGlobalContext } from '../../hooks/useGlobalContext';
+import { db } from '../../services/firebase';
+import { formatTimestampToDate } from '../../utils/formatTimestampToDate';
+import { AlertMessage } from '../AlertMessage';
 import { AlertModal } from '../AlertModal';
 
 import { Avatar } from '../Avatar';
@@ -18,8 +20,25 @@ import {
   PostInfo,
   PostComments,
   CommentContainer,
+  ErrorContainer,
   CommentForm,
 } from './styles';
+
+interface Alert{
+  type: 'error' | 'success';
+  message: string;
+}
+
+export type CommentaryType = {
+  id: string;
+  authorAvatar: string;
+  authorName: string;
+  commentary: string;
+  createdBy: string;
+  commentedOn: string;
+  publishedAt: Timestamp;
+  likes: number;
+}
 
 export function Post({ 
   id, 
@@ -32,17 +51,13 @@ export function Post({
   const { user } = useAuthContext();
   const { openModal, isModalOpen, closeModal } = useGlobalContext();
 
+  const [commentary, setCommentary] = useState('');
+  const [commentaries, setCommentaries] = useState<CommentaryType[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [alert, setAlert] = useState({} as Alert);
+
+  const alertRef = useRef<HTMLSpanElement>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
-
-  function formatDate(timestamp: Timestamp){
-    const date = timestamp;
-
-    if(!date){return;}
-
-    const formattedDate = publishedAt.toDate();
-
-    return formatDistanceToNow(formattedDate, { addSuffix: true });
-  }
 
   async function handleDeletePost(){
     try{
@@ -54,6 +69,66 @@ export function Post({
       console.log(error.message)
     }
   }
+
+  async function handleCreateCommentary(e: FormEvent){
+    e.preventDefault();
+
+    try{
+      if(!user){ return; }
+      
+      setIsLoading(true);
+
+      await createCommentary(user, commentary, id);
+    }catch(error: any){
+      setAlert({
+        type: 'error',
+        message: 'Something went wrong! Please try later.'
+      });
+    }finally{
+      setIsLoading(false);
+      setCommentary('');
+    }
+  }
+
+  useEffect(() =>{
+    const timeout = setTimeout(() =>{
+      setAlert({
+        type: 'error',
+        message: '',
+      });
+    }, 3000);
+
+    return () =>{
+      clearTimeout(timeout);
+    }
+  }, [alert]);
+
+  useEffect(() =>{
+    const commentariesQuery = query(collection(db, "commentaries"), where("commentedOn", "==", id));
+
+    const unsubscribe = onSnapshot(
+      commentariesQuery,
+      (snapshot) =>{
+        const data = snapshot.docs.map((doc) =>{
+          return{
+            id: doc.id,
+            ...doc.data()
+          }
+        });
+
+        const formattedData = data as CommentaryType[];
+
+        setCommentaries(formattedData);
+      },
+      (error) =>{
+        console.log(error.code);
+      }
+    );
+
+    return () =>{
+      unsubscribe();
+    }
+  }, []);
  
   return(
     <PostContainer>
@@ -66,7 +141,7 @@ export function Post({
               <strong>{authorName}</strong>
             )}
           <span>・</span>
-          <time>{formatDate(publishedAt)}</time>
+          <time>{formatTimestampToDate(publishedAt)}</time>
           {createdBy === user?.id && (
             <button
               type="button"
@@ -83,13 +158,38 @@ export function Post({
       <CommentContainer>
         <strong>Leave a comment</strong>
         <div>
-          <CommentForm>
-            <textarea />
-            <button type="submit">Publish</button>
+          {alert.message && (
+            <ErrorContainer>
+              <AlertMessage 
+                alertRef={alertRef}
+                type={alert.type}
+                message={alert.message}
+              />
+            </ErrorContainer>
+          )}
+          <CommentForm onSubmit={handleCreateCommentary}>
+            <textarea 
+              value={commentary}
+              onChange={(e) => setCommentary(e.target.value)}
+              disabled={isLoading}
+            />
+
+            <button 
+              type="submit"
+              disabled={isLoading}
+            >
+              Publish
+            </button>
           </CommentForm>
           <PostComments>
-            <Comment />
-            <Comment />
+            {commentaries.map((commentary) =>{
+              return(
+                <Comment 
+                  key={commentary.id}
+                  {...commentary}
+                />
+              )
+            })}
           </PostComments>
         </div>
       </CommentContainer>

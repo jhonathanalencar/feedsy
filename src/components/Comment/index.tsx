@@ -1,30 +1,60 @@
 
+import { Timestamp } from 'firebase/firestore';
 import { ThumbsUp, Trash } from 'phosphor-react';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { formatTimestampToDate } from '../../utils/formatTimestampToDate';
 
 import { Avatar } from '../Avatar';
+import { CommentaryType } from '../Post';
 
 import { PostComment, CommentContent, CommentInfo } from './styles';
 
-export function Comment(){
+interface CommentProps{
+  id: string;
+  authorAvatar: string;
+  authorName: string;
+  comment: string;
+  createdBy: string;
+  commentedOn: string;
+  publishedAt: Timestamp;
+  likes: number;
+}
+
+export function Comment({
+  id,
+  authorAvatar,
+  authorName,
+  commentary,
+  createdBy,
+  publishedAt,
+  commentedOn,
+  likes,
+}: CommentaryType){
+  const { user } = useAuthContext();
+
   return(
     <PostComment>
-      <Avatar imgUrl="https://images.pexels.com/photos/762080/pexels-photo-762080.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" />
+      <Avatar imgUrl={authorAvatar ?? ''} />
       <CommentContent>
         <CommentInfo>
           <header>
             <div>
-              <strong>Alice<span> (you)</span></strong>
-              <time>{new Date().toISOString()}</time>
+              {createdBy === user?.id ? (
+                <strong>{authorName} <span>(you)</span></strong>
+              ) : (
+                <strong>{authorName}</strong>
+              )}
+              <time>{formatTimestampToDate(publishedAt)}</time>
             </div>
             <button type="button">
               <Trash />
             </button>
           </header>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque commodi ducimus nulla soluta distinctio veniam incidunt nobis quia molestiae rerum.</p>
+          <p>{commentary}</p>
         </CommentInfo>
         <button type="button">
           <ThumbsUp />
-          <span>Like・03</span>
+          <span>Like・{String(likes).padStart(2, '0')}</span>
         </button>
       </CommentContent>
     </PostComment>

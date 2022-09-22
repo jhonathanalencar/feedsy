@@ -103,6 +103,10 @@ export const CommentContainer = styled.div`
   }
 `;
 
+export const ErrorContainer = styled.div`
+  display: flex;
+`;
+
 export const CommentForm = styled.form`
   flex: 1;
   margin-bottom: 2rem;
@@ -155,6 +159,10 @@ export const CommentForm = styled.form`
 
     &:hover{
       background-color: ${(props) => props.theme['blue-400']};
+    }
+
+    &:hover{
+      display: block;
     }
   }
 `;

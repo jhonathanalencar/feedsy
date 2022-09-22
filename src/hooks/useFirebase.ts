@@ -134,4 +134,15 @@ export async function deletePost(postId: string){
   await deleteDoc(postRef);
 }
  
+export async function createCommentary(user: UserType, commentary: string, postId: string){
+  await addDoc(collection(db, "commentaries"), {
+    authorAvatar: user.userAvatar ? user.userAvatar : '',
+    authorName: user.username,
+    commentary,
+    createdBy: user.id,
+    publishedAt: serverTimestamp(),
+    commentedOn: postId,
+    likes: 0,
+  });
+}
           
