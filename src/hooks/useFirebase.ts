@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
-import { collection, deleteDoc, doc, getDoc, getDocs, serverTimestamp, setDoc, Timestamp, updateDoc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, serverTimestamp, setDoc, Timestamp, updateDoc } from "firebase/firestore";
 import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { auth, db, storage } from "../services/firebase";
 
@@ -116,5 +116,22 @@ export async function deleteFromFirebase(userId: string){
   }
 }
 
+export async function createNewPost(user: UserType, content: string){
+  const publishedAt = serverTimestamp();
+
+  await addDoc(collection(db, "posts"), {
+    authorAvatar: user.userAvatar ? user.userAvatar : '',
+    authorName: user.username,
+    content,
+    createdBy: user.id,
+    publishedAt,
+  });
+}
+
+export async function deletePost(postId: string){
+  const postRef = doc(db, "posts", postId);
+  
+  await deleteDoc(postRef);
+}
  
           

@@ -1,5 +1,4 @@
-import { MouseEvent, RefObject, useEffect, useRef } from 'react';
-import { CSSTransition } from 'react-transition-group';
+import { FormEvent, MouseEvent, RefObject, useEffect, useRef, useState } from 'react';
 import { X } from 'phosphor-react';
 
 import { useGlobalContext } from '../../hooks/useGlobalContext';
@@ -12,15 +11,30 @@ import {
   Form,
   PublishButton,
 } from './styles';
+import { createNewPost } from '../../hooks/useFirebase';
+import { useAuthContext } from '../../hooks/useAuthContext';
+import { Loading } from '../Loading';
+import { AlertMessage } from '../AlertMessage';
 
 interface PostDialogProps{
   overlayRef: RefObject<HTMLDivElement>
 }
 
+interface FormAlert{
+  type: 'error' | 'success';
+  message: string;
+}
+
 export function PostDialog({ overlayRef }: PostDialogProps){
-  const { closeDialog, isDialogOpen } = useGlobalContext();
+  const { user } = useAuthContext();
+  const { closeDialog } = useGlobalContext();
+
+  const [postContent, setPostContent] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [formAlert, setFormAlert] = useState({} as FormAlert);
 
   const contentRef = useRef<HTMLDivElement | null>(null);
+  const errorRef = useRef<HTMLSpanElement>(null);
 
   function handleCloseDialogByClickingOnOverlay(e: MouseEvent){
     if(!contentRef.current){ return; }
@@ -35,6 +49,27 @@ export function PostDialog({ overlayRef }: PostDialogProps){
   function handleCloseDialogByPressingEscape(e: KeyboardEvent){
     if(e.key === 'Escape'){
       closeDialog();
+    }
+  }
+
+  async function handleCreateNewPost(e: FormEvent){
+    e.preventDefault();
+
+    try{
+      if(!user){ return; }
+      
+      setIsLoading(true);
+      await createNewPost(user, postContent);
+      setIsLoading(false);
+
+      closeDialog();
+    }catch(error: any){
+      setIsLoading(false);
+      
+      setFormAlert({
+        type: 'error',
+        message: 'Something went wrong! Please try later.'
+      })
     }
   }
 
@@ -62,9 +97,26 @@ export function PostDialog({ overlayRef }: PostDialogProps){
           </CloseButton>
           <h1 id="dialogTitle">New Post</h1>
           <p id="dialogDescription">What do you want to talk about?</p>
-          <Form>
-            <textarea />
-            <PublishButton>Publish</PublishButton>
+          <Form onSubmit={handleCreateNewPost}>
+            {formAlert.message && (
+              <AlertMessage 
+                alertRef={errorRef} 
+                type={formAlert.type}
+                message={formAlert.message}
+              />
+            )}
+
+            <textarea 
+              value={postContent}
+              onChange={(e) => setPostContent(e.target.value)}
+            />
+            <PublishButton>
+              {isLoading ? (
+                <Loading />
+                ) : (
+                  'Publish'
+                  )}
+            </PublishButton>
           </Form>
         </DialogContent>
       </DialogOverlay>

@@ -18,6 +18,7 @@ export const PostInfo = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 1rem;
+  width: 100%;
 
   header{
     display: flex;
@@ -33,6 +34,11 @@ export const PostInfo = styled.div`
 
     strong{
       margin-left: 0.5rem;
+
+      > span{
+        font-size: 1rem;
+        color: ${({theme}) => theme['gray-300']};
+      }
     }
 
     span{
@@ -52,6 +58,25 @@ export const PostInfo = styled.div`
 
       @media (min-width: 550px){
         font-size: 1rem;
+      }
+    }
+
+    button{
+      display: inline-flex;
+      margin-left: auto;
+      background: transparent;
+      border: transparent;
+      cursor: pointer;
+      
+      svg{
+        height: 1.25rem;
+        width: 1.25rem;
+        color: ${({theme}) => theme['gray-400']};
+        transition: color 0.5s ease;
+
+        &:hover{
+          color: ${({theme}) => theme['red-400']};
+        }
       }
     }
   }

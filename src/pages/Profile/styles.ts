@@ -8,21 +8,6 @@ export const ProfileContainer = styled.div`
   justify-content: center;
   flex-direction: column;
   padding-inline: 1rem;
-
-  .modal-fade-enter {
-    opacity: 0;
-  }
-  .modal-fade-enter-active {
-    opacity: 1;
-    transition: all .5s ease-in;
-  }
-  .modal-fade-exit {
-    opacity: 1;
-  }
-  .modal-fade-exit-active {
-    opacity: 0;
-    transition: all .5s ease-out;
-  }
 `;
 
 export const ProfileBackground = styled.div`

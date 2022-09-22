@@ -21,6 +21,7 @@ export const GlobalContext = createContext({} as GlobalContextData);
 
 export function GlobalContextProvider({ children }: GlobalContextProviderProps){
   const dropdownButtonRef = useRef<HTMLLIElement>(null);
+
   const [isDropdownMenuOpen, setIsDropdownMenuOpen] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false);

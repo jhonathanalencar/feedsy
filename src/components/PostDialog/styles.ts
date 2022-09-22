@@ -122,10 +122,12 @@ export const PublishButton = styled.button`
   border: transparent;
   background-color: ${({theme}) => theme['blue-600']};
   color: ${({theme}) => theme['gray-100']};
-  padding: 0.75rem 1.5rem;
+  padding: 0rem 1.5rem;
   border-radius: 0.25rem;
   cursor: pointer;
   transition: background-color .3s ease;
+  height: 2.7rem;
+  width: 6.25rem;
 
   &:hover{
     background-color: ${({theme}) => lighten(0.1, theme['blue-600'])};

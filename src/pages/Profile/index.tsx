@@ -3,7 +3,7 @@ import { Clock, Envelope, FileImage, User } from 'phosphor-react';
 import { collection, onSnapshot, Timestamp } from 'firebase/firestore';
 import { deleteUser, signInWithEmailAndPassword } from 'firebase/auth';
 import { format } from 'date-fns';
-import { CSSTransition } from 'react-transition-group';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import { AlertMessage } from '../../components/AlertMessage';
 import { AlertModal } from '../../components/AlertModal';
@@ -37,7 +37,7 @@ interface Alert{
 
 export function Profile(){
   const { user, updateUser, signOutUser } = useAuthContext();
-  const { isModalOpen, openModal } = useGlobalContext();
+  const { isModalOpen, openModal, closeModal } = useGlobalContext();
 
   const [alert, setAlert] = useState({} as Alert);
   const [pictureFile, setPictureFile] = useState<File | null>(null);
@@ -126,6 +126,7 @@ export function Profile(){
 
       signOutUser();
       setIsLoading(false);
+      closeModal();
     }catch(error: any){
       console.log(error.code);
       console.log(error.message);
@@ -251,20 +252,24 @@ export function Profile(){
           </ProfileInfoContainer>
         </ProfileContent>
       </ProfileBackground>
-          <CSSTransition 
-            in={isModalOpen} 
-            nodeRef={modalRef}
-            timeout={500} 
-            unmountOnExit
-            classNames="modal-fade"
-          >
-            <AlertModal 
-              overlayRef={modalRef}
-              warning="Delete account"
-              description="Are you sure you want to permanently delete your account?"
-              handle={handleDeleteUser}
-            />
-          </CSSTransition>
+          <TransitionGroup>
+            {isModalOpen && (
+              <CSSTransition 
+                in={isModalOpen} 
+                nodeRef={modalRef}
+                timeout={500} 
+                unmountOnExit
+                classNames="modal-fade"
+              >
+                <AlertModal 
+                  overlayRef={modalRef}
+                  warning="Delete account"
+                  description="Are you sure you want to permanently delete your account?"
+                  handle={handleDeleteUser}
+                />
+              </CSSTransition>
+            )}
+          </TransitionGroup>
     </ProfileContainer>
   )
 }

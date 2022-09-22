@@ -2,8 +2,30 @@ import styled from "styled-components";
 import { darken } from "polished";
 
 export const ModalContainer = styled.div`
-  position: absolute;
+  position: fixed;
   inset: 0;
+  left: 0;
+  height: 100vh;
+
+  /* CSSTransition classes  */
+  .modal-fade-enter {
+    transform: scale(0);
+    opacity: 0;
+  }
+  .modal-fade-enter-active {
+    transform: scale(1);
+    opacity: 1;
+    transition: opacity .5s ease-in, transform .5s ease-in;
+  }
+  .modal-fade-exit {
+    transform: scale(1);
+    opacity: 1;
+  }
+  .modal-fade-exit-active {
+    transform: scale(0);
+    opacity: 0;
+    transition: opacity .5s ease-out, transform .5s ease-out;
+  }
 `;
 
 export const ModalOverlay = styled.div`
@@ -12,22 +34,6 @@ export const ModalOverlay = styled.div`
   justify-content: center;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.7);
-
-  /* CSSTransition classes  */
-  .modal-scale-enter {
-    transform: scale(0);
-  }
-  .modal-scale-enter-active {
-    transform: scale(1);
-    transition: transform .5s ease-in;
-  }
-  .modal-scale-exit {
-    transform: scale(1);
-  }
-  .modal-scale-exit-active {
-    transform: scale(0);
-    transition: transform .5s ease-out;
-  }
 `;
 
 export const ModalContent = styled.div`

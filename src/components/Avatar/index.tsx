@@ -1,5 +1,6 @@
 import { ImgHTMLAttributes } from 'react';
-import { UserAvatar, UserAvatarWithBorder } from './styles';
+import { UserAvatar, UserAvatarWithBorder, UserAvatarWithoutImage } from './styles';
+import { UserCircle } from 'phosphor-react'
 
 interface AvatarProps extends ImgHTMLAttributes<HTMLImageElement>{
   imgUrl: string;
@@ -7,6 +8,14 @@ interface AvatarProps extends ImgHTMLAttributes<HTMLImageElement>{
 }
 
 export function Avatar({ imgUrl, hasBorder = false, ...rest }: AvatarProps){
+  if(!imgUrl){
+    return(
+      <UserAvatarWithoutImage>
+        <UserCircle weight="regular" />
+      </UserAvatarWithoutImage>
+    )
+  }
+
   return(
     <>
       {hasBorder ? (

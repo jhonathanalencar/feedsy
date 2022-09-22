@@ -13,3 +13,10 @@ export const PostsWrapper = styled.div`
   max-width: 700px;
   margin: 0 auto;
 `;
+
+export const EmptyListText = styled.span`
+  text-align: center;
+  display: block;
+  font-size: 1.125rem;
+  font-weight: bold;
+`;
