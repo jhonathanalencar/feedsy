@@ -37,7 +37,7 @@ interface Alert{
 
 export function Profile(){
   const { user, updateUser, signOutUser } = useAuthContext();
-  const { isModalOpen, openModal, closeModal } = useGlobalContext();
+  const { modalType, openModal, closeModal } = useGlobalContext();
 
   const [alert, setAlert] = useState({} as Alert);
   const [pictureFile, setPictureFile] = useState<File | null>(null);
@@ -253,9 +253,9 @@ export function Profile(){
         </ProfileContent>
       </ProfileBackground>
           <TransitionGroup>
-            {isModalOpen && (
+            {modalType.show && (
               <CSSTransition 
-                in={isModalOpen} 
+                in={modalType.show} 
                 nodeRef={modalRef}
                 timeout={500} 
                 unmountOnExit

@@ -1,16 +1,28 @@
 import { createContext, ReactNode, RefObject, useRef, useState } from "react";
 
+interface ToastProps{
+  show: boolean;
+  message: string;
+}
+
+interface ModalProps{
+  show: boolean;
+}
+
 interface GlobalContextData{
   isDropdownMenuOpen: boolean;
   dropdownButtonRef: RefObject<HTMLLIElement>;
   toggleDropdownMenu: () => void;
   closeDropdownMenu: () => void;
-  isModalOpen: boolean;
+  modalType: ModalProps;
   closeModal: () => void;
   openModal: () => void;
   isDialogOpen: boolean;
   closeDialog: () => void;
   openDialog: () => void;
+  toast: ToastProps;
+  closeToast: () => void;
+  openToast: (message: string) => void;
 }
 
 interface GlobalContextProviderProps{
@@ -24,8 +36,9 @@ export function GlobalContextProvider({ children }: GlobalContextProviderProps){
 
   const [isDropdownMenuOpen, setIsDropdownMenuOpen] = useState(false);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [modalType, setModalType] = useState({} as ModalProps);
+  const [toast, setToast] = useState({} as ToastProps);
 
   function closeDropdownMenu(){
     setIsDropdownMenuOpen(false);
@@ -36,11 +49,15 @@ export function GlobalContextProvider({ children }: GlobalContextProviderProps){
   }
 
   function closeModal(){
-    setIsModalOpen(false);
+    setModalType({
+      show: false,
+    });
   }
 
   function openModal(){
-    setIsModalOpen(true);
+    setModalType({
+      show: true
+    });
   }
 
   function closeDialog(){
@@ -51,18 +68,35 @@ export function GlobalContextProvider({ children }: GlobalContextProviderProps){
     setIsDialogOpen(true);
   }
 
+  function closeToast(){
+    setToast({
+      show: false,
+      message: '',
+    });
+  }
+
+  function openToast(message: string){
+    setToast({
+      show: true,
+      message,
+    });
+  }
+
   return(
     <GlobalContext.Provider value={{
       isDropdownMenuOpen,
       dropdownButtonRef,
       toggleDropdownMenu,
       closeDropdownMenu,
-      isModalOpen,
+      modalType,
       closeModal,
       openModal,
       isDialogOpen,
       closeDialog,
       openDialog,
+      toast,
+      closeToast,
+      openToast,
     }}>
       {children}
     </GlobalContext.Provider>

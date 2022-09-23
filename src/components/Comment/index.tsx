@@ -1,24 +1,15 @@
 
-import { Timestamp } from 'firebase/firestore';
 import { ThumbsUp, Trash } from 'phosphor-react';
+
 import { useAuthContext } from '../../hooks/useAuthContext';
+import { deleteCommentary } from '../../hooks/useFirebase';
+import { useGlobalContext } from '../../hooks/useGlobalContext';
 import { formatTimestampToDate } from '../../utils/formatTimestampToDate';
 
 import { Avatar } from '../Avatar';
 import { CommentaryType } from '../Post';
 
 import { PostComment, CommentContent, CommentInfo } from './styles';
-
-interface CommentProps{
-  id: string;
-  authorAvatar: string;
-  authorName: string;
-  comment: string;
-  createdBy: string;
-  commentedOn: string;
-  publishedAt: Timestamp;
-  likes: number;
-}
 
 export function Comment({
   id,
@@ -31,6 +22,15 @@ export function Comment({
   likes,
 }: CommentaryType){
   const { user } = useAuthContext();
+  const { openToast } = useGlobalContext();
+
+  async function handleDeleteCommentary(){
+    try{
+      await deleteCommentary(id);
+    }catch(error: any){
+      openToast('The operation could not be completed');
+    }
+  }
 
   return(
     <PostComment>
@@ -46,9 +46,16 @@ export function Comment({
               )}
               <time>{formatTimestampToDate(publishedAt)}</time>
             </div>
-            <button type="button">
-              <Trash />
-            </button>
+            {createdBy === user?.id && (
+              <button 
+                type="button"
+                title="delete"
+                aria-label="delete"
+                onClick={handleDeleteCommentary}
+              >
+                <Trash />
+              </button>
+            )}
           </header>
           <p>{commentary}</p>
         </CommentInfo>

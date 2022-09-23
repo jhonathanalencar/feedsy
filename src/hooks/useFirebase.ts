@@ -1,5 +1,5 @@
 import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, serverTimestamp, setDoc, Timestamp, updateDoc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, Timestamp, updateDoc, where } from "firebase/firestore";
 import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { auth, db, storage } from "../services/firebase";
 
@@ -130,6 +130,14 @@ export async function createNewPost(user: UserType, content: string){
 
 export async function deletePost(postId: string){
   const postRef = doc(db, "posts", postId);
+  const commentariesRef = collection(db, "commentaries");
+
+  const commentariesQuery = query(commentariesRef, where("commentedOn", "==", postId));
+  const commentaries = await getDocs(commentariesQuery)
+
+  commentaries.forEach(async (doc) =>{
+    await deleteDoc(doc.ref);
+  });
   
   await deleteDoc(postRef);
 }
@@ -144,5 +152,11 @@ export async function createCommentary(user: UserType, commentary: string, postI
     commentedOn: postId,
     likes: 0,
   });
+}
+
+export async function deleteCommentary(commentaryId: string){
+  const commentaryRef = doc(db, "commentaries", commentaryId);
+  
+  await deleteDoc(commentaryRef);
 }
           

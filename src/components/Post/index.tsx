@@ -1,18 +1,16 @@
-import { collection, onSnapshot, orderBy, query, Timestamp, where } from 'firebase/firestore';
-import { TrashSimple } from 'phosphor-react';
 import { FormEvent, useEffect, useRef, useState } from 'react';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import { collection, onSnapshot, query, Timestamp, where } from 'firebase/firestore';
+import { TrashSimple } from 'phosphor-react';
+
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { createCommentary, deletePost } from '../../hooks/useFirebase';
 import { useGlobalContext } from '../../hooks/useGlobalContext';
 import { db } from '../../services/firebase';
 import { formatTimestampToDate } from '../../utils/formatTimestampToDate';
-import { AlertMessage } from '../AlertMessage';
-import { AlertModal } from '../AlertModal';
 
+import { AlertMessage } from '../AlertMessage';
 import { Avatar } from '../Avatar';
 import { Comment } from '../Comment';
-
 import { PostType } from '../Posts';
 
 import {
@@ -49,7 +47,7 @@ export function Post({
   createdBy 
 }: PostType){
   const { user } = useAuthContext();
-  const { openModal, isModalOpen, closeModal } = useGlobalContext();
+  const { openToast } = useGlobalContext();
 
   const [commentary, setCommentary] = useState('');
   const [commentaries, setCommentaries] = useState<CommentaryType[]>([]);
@@ -57,16 +55,12 @@ export function Post({
   const [alert, setAlert] = useState({} as Alert);
 
   const alertRef = useRef<HTMLSpanElement>(null);
-  const overlayRef = useRef<HTMLDivElement | null>(null);
 
   async function handleDeletePost(){
     try{
       await deletePost(id);
-      
-      closeModal();
     }catch(error: any){
-      console.log(error.code)
-      console.log(error.message)
+      openToast('The operation could not be completed');
     }
   }
 
@@ -109,6 +103,7 @@ export function Post({
     const unsubscribe = onSnapshot(
       commentariesQuery,
       (snapshot) =>{
+
         const data = snapshot.docs.map((doc) =>{
           return{
             id: doc.id,
@@ -117,7 +112,7 @@ export function Post({
         });
 
         const formattedData = data as CommentaryType[];
-
+       
         setCommentaries(formattedData);
       },
       (error) =>{
@@ -147,7 +142,7 @@ export function Post({
               type="button"
               title="delete"
               aria-label="delete"
-              onClick={openModal}
+              onClick={handleDeletePost}
             >
               <TrashSimple weight="fill" />
             </button>
@@ -193,24 +188,6 @@ export function Post({
           </PostComments>
         </div>
       </CommentContainer>
-      <TransitionGroup>
-        {isModalOpen && (
-          <CSSTransition 
-            in={isModalOpen} 
-            nodeRef={overlayRef}
-            timeout={500} 
-            unmountOnExit
-            classNames="modal-fade"
-          >
-            <AlertModal
-              overlayRef={overlayRef}
-              warning="Delete post"
-              description='Are you sure you want to delete this post?'
-              handle={handleDeletePost}
-            />
-          </CSSTransition>
-        )}
-      </TransitionGroup>
     </PostContainer>
   )
 }

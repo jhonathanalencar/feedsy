@@ -2,10 +2,11 @@ import { useRef } from 'react';
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { PostDialog } from "../../components/PostDialog";
 import { Posts } from "../../components/Posts";
+import { Toast } from '../../components/Toast';
 import { useGlobalContext } from "../../hooks/useGlobalContext";
 
 export function Home(){
-  const { isDialogOpen } = useGlobalContext();
+  const { isDialogOpen, toast } = useGlobalContext();
   const overlayRef = useRef<HTMLDivElement | null>(null);
 
   return(
@@ -25,6 +26,8 @@ export function Home(){
           </CSSTransition>
         )}
       </TransitionGroup>
+      
+      <Toast message={toast.message} />
     </main>
   )
 }
