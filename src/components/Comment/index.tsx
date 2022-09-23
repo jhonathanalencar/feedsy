@@ -2,7 +2,7 @@
 import { ThumbsUp, Trash } from 'phosphor-react';
 
 import { useAuthContext } from '../../hooks/useAuthContext';
-import { deleteCommentary } from '../../hooks/useFirebase';
+import { addLikeOnCommentary, deleteCommentary } from '../../hooks/useFirebase';
 import { useGlobalContext } from '../../hooks/useGlobalContext';
 import { formatTimestampToDate } from '../../utils/formatTimestampToDate';
 
@@ -24,9 +24,24 @@ export function Comment({
   const { user } = useAuthContext();
   const { openToast } = useGlobalContext();
 
+  let isLiked: boolean = false;
+
+  if(user){
+    isLiked = likes.includes(user.id);
+  }
+
   async function handleDeleteCommentary(){
     try{
       await deleteCommentary(id);
+    }catch(error: any){
+      openToast('The operation could not be completed');
+    }
+  }
+
+  async function handleAddLikeOnCommentary(){
+    if(!user){ return; }
+    try{
+      await addLikeOnCommentary(user, id);
     }catch(error: any){
       openToast('The operation could not be completed');
     }
@@ -59,9 +74,13 @@ export function Comment({
           </header>
           <p>{commentary}</p>
         </CommentInfo>
-        <button type="button">
+        <button 
+          type="button"
+          onClick={handleAddLikeOnCommentary}
+          className={isLiked ? 'active' : ''}
+        >
           <ThumbsUp />
-          <span>Like・{String(likes).padStart(2, '0')}</span>
+          <span>Like・{String(likes.length).padStart(2, '0')}</span>
         </button>
       </CommentContent>
     </PostComment>

@@ -1,9 +1,10 @@
 import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, Timestamp, updateDoc, where } from "firebase/firestore";
+import { addDoc, arrayRemove, arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, query, serverTimestamp, setDoc, Timestamp, updateDoc, where } from "firebase/firestore";
 import { deleteObject, getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { auth, db, storage } from "../services/firebase";
 
 import { UserType } from "../reducers/auth/types";
+import { CommentaryType } from "../components/Post";
 
 export async function checkDuplicatedUsername(username: string){
   let isDuplicatedUsername = false;
@@ -150,7 +151,7 @@ export async function createCommentary(user: UserType, commentary: string, postI
     createdBy: user.id,
     publishedAt: serverTimestamp(),
     commentedOn: postId,
-    likes: 0,
+    likes: [],
   });
 }
 
@@ -158,5 +159,23 @@ export async function deleteCommentary(commentaryId: string){
   const commentaryRef = doc(db, "commentaries", commentaryId);
   
   await deleteDoc(commentaryRef);
+}
+
+export async function addLikeOnCommentary(user: UserType, commentaryId: string){
+  const commentaryRef = doc(db, "commentaries", commentaryId);
+
+  const commentaryDocument = await getDoc(commentaryRef);
+ 
+  const commentaryData = commentaryDocument.data() as CommentaryType;
+
+  if(commentaryData.likes.includes(user.id)){
+    await updateDoc(commentaryRef, {
+      likes: arrayRemove(user.id),
+    });
+  }else{
+    await updateDoc(commentaryRef, {
+      likes: arrayUnion(user.id),
+    });
+  }
 }
           

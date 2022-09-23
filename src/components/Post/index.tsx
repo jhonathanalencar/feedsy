@@ -35,7 +35,7 @@ export type CommentaryType = {
   createdBy: string;
   commentedOn: string;
   publishedAt: Timestamp;
-  likes: number;
+  likes: string[];
 }
 
 export function Post({ 

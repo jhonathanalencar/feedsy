@@ -48,6 +48,10 @@ export const CommentContent = styled.div`
     svg{
       font-size: 1.3rem;
     }
+
+    &.active{
+      color: ${({theme}) => theme['blue-600']};
+    }
   }
 `;
 
