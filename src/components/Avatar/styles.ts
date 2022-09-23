@@ -6,12 +6,22 @@ export const UserAvatar = styled.div`
   height: 2.5rem;
   border-radius: 50%;
   aspect-ratio: 1 / 1;
-
+  
   img{
     border-radius: 50%;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    animation: fadeIn 0.5s ease;
+  }
+
+   @keyframes fadeIn{
+    0%{
+      opacity: 0;
+    }
+    100%{
+      opacity: 1;
+    }
   }
 `;
   

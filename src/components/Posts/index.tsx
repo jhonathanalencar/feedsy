@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { collection, onSnapshot, orderBy, query, Timestamp } from 'firebase/firestore';
 
 import { db } from '../../services/firebase';
@@ -10,6 +10,7 @@ import {
   PostsWrapper,
   EmptyListText,
 } from './styles';
+import { LoadingPost } from '../Shimmer/LoadingPost';
 
 export type PostType = {
   id: string;
@@ -22,6 +23,7 @@ export type PostType = {
 
 export function Posts(){
   const [posts, setPosts] = useState<PostType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() =>{
     const postsQuery = query(collection(db, "posts"), orderBy("publishedAt", "desc"));
@@ -39,6 +41,7 @@ export function Posts(){
         const formattedData = data as PostType[];
 
         setPosts(formattedData);
+        setIsLoading(false);
       },
       (error) =>{
         console.log(error.code);
@@ -52,21 +55,30 @@ export function Posts(){
   }, []);
 
   return(
-    <PostsContainer>
-      {posts.length === 0 ? (
-        <EmptyListText>No posts found</EmptyListText>
+    <>
+      {isLoading ? (
+        <PostsContainer>
+          <LoadingPost />
+          <LoadingPost />
+        </PostsContainer>
       ) : (
-        <PostsWrapper>
-          {posts.map((post) =>{
-            return(
-              <Post 
-                key={post.id}
-                {...post}
-              />
-            )
-          })}
-        </PostsWrapper>
+        <PostsContainer>
+          {posts.length === 0 ? (
+            <EmptyListText>No posts found</EmptyListText>
+          ) : (
+            <PostsWrapper>
+              {posts.map((post) =>{
+                return(
+                  <Post 
+                    key={post.id}
+                    {...post}
+                  />
+                )
+              })}
+            </PostsWrapper>
+          )}
+        </PostsContainer>
       )}
-    </PostsContainer>
+    </>
   )
 }
