@@ -94,7 +94,8 @@ export async function uploadFileToStorage(
         .catch((error: any) =>{
           console.log(error.code);
           console.log(error.message);
-        })
+          changeUploadState(false);
+        });
     }
   );
 }
@@ -106,15 +107,26 @@ export async function signOutUserFromFirebase(){
 export async function deleteFromFirebase(userId: string){
   const userRef = doc(db, "users", userId);
   const userDocument = await getDoc(userRef);
-  
-  await deleteDoc(userRef);
 
-  const userData = userDocument.data() as UserType;
+  const userData = { 
+    id: userDocument.id, 
+    ...userDocument.data()
+  } as UserType;
 
   if(userData.userAvatar){
     const profilePictureRef = ref(storage, userData.userAvatar);
     await deleteObject(profilePictureRef);
   }
+
+  const postsRef = query(collection(db, "posts"), where("createdBy", "==", userData.id));
+
+  const posts = await getDocs(postsRef);
+  
+  posts.forEach(async (post) =>{
+    await deletePost(post.id);
+  });
+
+  await deleteDoc(userRef);
 }
 
 export async function createNewPost(user: UserType, content: string){
@@ -134,7 +146,7 @@ export async function deletePost(postId: string){
   const commentariesRef = collection(db, "commentaries");
 
   const commentariesQuery = query(commentariesRef, where("commentedOn", "==", postId));
-  const commentaries = await getDocs(commentariesQuery)
+  const commentaries = await getDocs(commentariesQuery);
 
   commentaries.forEach(async (doc) =>{
     await deleteDoc(doc.ref);

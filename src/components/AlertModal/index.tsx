@@ -11,15 +11,23 @@ import {
   CancelButton,
   DeleteButton,
 } from './styles';
+import { Loading } from '../Loading';
 
 interface AlertModal{
   warning: string;
   description: string;
   handle: () => void;
   overlayRef: RefObject<HTMLDivElement>;
+  isLoading: boolean;
 }
 
-export function AlertModal({ warning, description, handle, overlayRef}: AlertModal){
+export function AlertModal({ 
+  warning, 
+  description, 
+  handle, 
+  overlayRef,
+  isLoading,
+}: AlertModal){
   const { closeModal } = useGlobalContext();
   
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -81,7 +89,7 @@ export function AlertModal({ warning, description, handle, overlayRef}: AlertMod
               type="button"
               onClick={handleClick}
             >
-              Delete
+              {isLoading ? <Loading /> : 'Delete'}
             </DeleteButton>
           </ButtonsContainer>
         </ModalContent>

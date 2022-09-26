@@ -60,6 +60,7 @@ export const ModalContent = styled.div`
   }
 
   h1{
+    text-align: center;
     color: ${({theme}) => theme['gray-200']};
   }
 
@@ -96,6 +97,7 @@ export const ButtonsContainer = styled.div`
 
 const Button = styled.button`
   text-transform: capitalize;
+  width: 5rem;
   padding: 0.5rem 1rem; 
   font-weight: bold;
   color: ${({theme}) => theme['gray-600']};

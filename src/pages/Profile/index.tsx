@@ -37,7 +37,7 @@ interface Alert{
 
 export function Profile(){
   const { user, updateUser, signOutUser } = useAuthContext();
-  const { modalType, openModal, closeModal } = useGlobalContext();
+  const { modalType, openModal, closeModal, openToast } = useGlobalContext();
 
   const [alert, setAlert] = useState({} as Alert);
   const [pictureFile, setPictureFile] = useState<File | null>(null);
@@ -90,7 +90,7 @@ export function Profile(){
     const fileName = String(new Date().getTime()) + ':' + pictureFile.name;
 
     if(!user){return};
-
+    
     await uploadFileToStorage(
       user, 
       fileName, 
@@ -266,6 +266,7 @@ export function Profile(){
                   warning="Delete account"
                   description="Are you sure you want to permanently delete your account?"
                   handle={handleDeleteUser}
+                  isLoading={isLoading}
                 />
               </CSSTransition>
             )}
